@@ -1,0 +1,23 @@
+syntax = "v1"
+
+info (
+	title: "视频流 API"
+	desc: "视频流 API"
+	author: "shidong.wu"
+)
+
+type request {
+	// TODO: add members here and delete this comment
+}
+
+type response {
+	// TODO: add members here and delete this comment
+}
+
+service feed-api {
+	@handler GetUser // TODO: set handler name and delete this comment
+	get /users/id/:userId(request) returns(response)
+
+	@handler CreateUser // TODO: set handler name and delete this comment
+	post /users/create(request)
+}
