@@ -1,0 +1,267 @@
+syntax = "v1"
+
+info(
+	title: "系统 API"
+	desc: "系统 API"
+	author: "dcris"
+)
+
+// 用户系统 API
+type (
+	RegisterReq {
+		UserName string `json:"username"` // 用户名
+		Password string `json:"password"` // 密码
+	}
+
+	RegisterResp {
+		StatusCode int64  `json:"status_code"` // 状态码 0-成功 1-失败
+		StatusMsg  string `json:"status_msg"`  // 状态信息
+		UserId     int64  `json:"user_id"`     // 用户id
+		Token      string `json:"token"`       // token
+	}
+
+	LoginReq {
+		UserName string `json:"username"` // 用户名
+		Password string `json:"password"` // 密码
+	}
+
+	LoginResp {
+		StatusCode int64  `json:"status_code"` // 状态码 0-成功 1-失败
+		StatusMsg  string `json:"status_msg"`  // 状态信息
+		UserId     int64  `json:"user_id"`     // 用户id
+		Token      string `json:"token"`       // token
+	}
+
+	User {
+		Id            int64  `json:"id"`             // 用户id
+		Name          string `json:"name"`           // 用户名
+		FollowCount   int64  `json:"follow_count"`   // 关注数
+		FollowerCount int64  `json:"follower_count"` // 粉丝数
+		IsFollow      bool   `json:"is_follow"`      // 是否关注
+	}
+
+	UserReq {
+		UserId int64 `json:"user_id"` // 用户id
+	}
+
+	UserResp {
+		StatusCode int64  `json:"status_code"` // 状态码 0-成功 1-失败
+		StatusMsg  string `json:"status_msg"`  // 状态信息
+		User       User   `json:"user"`        // 用户信息
+	}
+)
+
+@server(
+	group : user
+)
+service system-api {
+	@doc "用户注册"
+	@handler Register
+	post /tiktok/user/register (RegisterReq) returns (RegisterResp)
+	
+	@doc "用户登录"
+	@handler Login
+	post /tiktok/user/login (LoginReq) returns (LoginResp)
+}
+
+@server(
+	group : user
+	jwt : Auth
+)
+service system-api {
+	@doc "获取用户信息"
+	@handler GetUserMsg
+	post /tiktok/user (UserReq) returns (UserResp)
+}
+
+// 获取视频流 API
+type (
+	FeedReq {
+		LatestTime string `path:"latest_time"`
+	}
+
+	Video {
+		Id            int64  `json:"id"`
+		Author        User   `json:"author"`
+		PlayUrl       string `json:"play_url"`       // 播放地址
+		CoverUrl      string `json:"cover_url"`      // 封面地址
+		FavoriteCount int64  `json:"favorite_count"` // 收藏数
+		CommentCount  int64  `json:"comment_count"`  // 评论数
+		IsFavorite    bool   `json:"is_favorite"`    // 是否收藏
+		Title         string `json:"title"`          // 视频标题
+	}
+
+	FeedResp {
+		StatsCode int64   `json:"stats_code"`
+		StatusMsg string  `json:"status_msg"`
+		NextTime  int64   `json:"next_time"`
+		VideoList []Video `json:"video_list"`
+	}
+)
+
+@server(
+	group : feed
+)
+service system-api {
+	@doc "不限制登录状态，返回按投稿时间倒序的视频列表，视频数由服务端控制，单次最多30个"
+	@handler GetVideoList
+	get /tiktok/feed/:latest_time (FeedReq) returns (FeedResp)
+}
+
+// 发布视频 API
+type (
+	PublishReq {
+		Data  []byte `form:"data"`
+		Title string `form:"title"`
+	}
+
+	PublishResp {
+		StatusCode int64  `json:"status_code"`
+		StatusMsg  string `json:"status_msg"`
+	}
+)
+
+@server(
+	group : publish
+	jwt : Auth
+)
+service system-api {
+	@doc "发布视频操作 "
+	@handler PublishAction
+	post /tiktok/publish/action (PublishReq) returns (PublishResp)
+}
+
+// 评论系统 API
+type (
+	Comment {
+		Id         int64  `json:"id"`
+		UserObj    User   `json:"user_obj"`
+		Content    string `json:"content"`     // 评论内容
+		CreateDate string `json:"create_date"` // 评论发布日期，格式 mm-dd
+	}
+
+	CommentActionReq {
+		VideoId     string `json:"vedio_id"`     // 视频id
+		ActionType  string `json:"action_type"`  // 1-发布评论，2-删除评论
+		CommentText string `json:"comment_text"` // 可选，用户填写的评论内容，在action_type=1的时候使用
+		CommentId   string `json:"comment_id"`   // 可选，要删除的评论id，在action_type=2的时候使用
+	}
+
+	CommentActionResp {
+		StatusCode int64   `json:"status_code"`
+		StatusMsg  string  `json:"status_msg"`
+		CommentObj Comment `json:"comment_obj"` // 多选一且必须只能符合下列其中一组子节点（即XOR，异或关系
+	}
+
+	CommentListReq {
+		VedioId string `path:"vedio_id"`
+	}
+
+	CommentListResp {
+		StatusCode  int64     `json:"status_code"`
+		StatusMsg   string    `json:"status_msg"`
+		CommentList []Comment `json:"array"`
+	}
+)
+
+@server(
+	group : comment
+	jwt : Auth
+)
+service system-api {
+	@doc "评论操作"
+	@handler CommentAction
+	post /tiktok/comment/action (CommentActionReq) returns (CommentActionResp)
+	
+	@doc "获取评论列表"
+	@handler CommentList
+	get /tiktok/comment/list/:vedio_id (CommentListReq) returns (CommentListResp)
+}
+
+// favorite API
+type (
+	FavoriteActionReq {
+		VideoId    string `json:"video_id"`
+		ActionType string `json:"action_type"` // 1-点赞，2-取消点赞
+	}
+
+	FavoriteActionResp {
+		StatusCode int64  `json:"status_code"` // 状态码，0-成功，其他值-失败
+		StatusMsg  string `json:"status_msg"`
+	}
+
+	FavoriteListReq {
+		UserId string `path:"user_id"`
+	}
+
+	FavoriteListResp {
+		StatusCode int64   `json:"status_code"` // 状态码，0-成功，其他值-失败
+		StatusMsg  string  `json:"status_msg"`  // 返回状态描述
+		VideoList  []Video `json:"video_list"`  // 户点赞视频列表
+	}
+)
+
+@server(
+	group : favorite
+	jwt : Auth
+)
+service system-api {
+	@doc "点赞操作"
+	@handler FavoriteAction
+	post /tiktok/favorite/action (FavoriteActionReq) returns (FavoriteActionResp)
+	
+	@doc "获取点赞列表"
+	@handler FavoriteList
+	get /tiktok/favorite/list/:user_id (FavoriteListReq) returns (FavoriteListResp)
+}
+
+// relation API
+type (
+	RelationActionReq {
+		ToUserId   string `json:"to_user_id"`  // 被关注用户id
+		ActionType string `json:"action_type"` // 1-关注，2-取消关注
+	}
+
+	RelationActionResp {
+		StatusCode int64  `json:"status_code"` // 状态码，0-成功，其他值-失败
+		StatusMsg  string `json:"status_msg"`  // 返回状态描述
+	}
+
+	RelationFollowListReq {
+		UserId string `path:"user_id"`
+	}
+
+	RelationFollowListResp {
+		StatusCode int64  `json:"status_code"` // 状态码，0-成功，其他值-失败
+		StatusMsg  string `json:"status_msg"`  // 返回状态描述
+		UserList   []User `json:"user_list"`   // 用户关注列表
+	}
+
+	RelationFollowerListReq {
+		UserId string `path:"user_id"`
+	}
+
+	RelationFollowerListResp {
+		StatusCode int64  `json:"status_code"` // 状态码，0-成功，其他值-失败
+		StatusMsg  string `json:"status_msg"`  // 返回状态描述
+		UserList   []User `json:"user_list"`   // 用户粉丝列表
+	}
+)
+
+@server(
+	group : relation
+	jwt : Auth
+)
+service system-api {
+	@doc "关注操作"
+	@handler RelationAction
+	post /tiktok/relation/action (RelationActionReq) returns (RelationActionResp)
+	
+	@doc "获取关注列表"
+	@handler RelationFollowList
+	get /tiktok/relation/follow/list/:user_id (RelationFollowListReq) returns (RelationFollowListResp)
+	
+	@doc "获取粉丝列表"
+	@handler RelationFollowerList
+	get /tiktok/relation/follower/list/:user_id (RelationFollowerListReq) returns (RelationFollowerListResp)
+}
