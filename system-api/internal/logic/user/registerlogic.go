@@ -2,6 +2,9 @@ package user
 
 import (
 	"context"
+	"go-zeroTiktok/user-service/pb/user"
+	"go-zeroTiktok/utils"
+	"google.golang.org/grpc/status"
 
 	"go-zeroTiktok/system-api/internal/svc"
 	"go-zeroTiktok/system-api/internal/types"
@@ -23,8 +26,31 @@ func NewRegisterLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Register
 	}
 }
 
-func (l *RegisterLogic) Register(req *types.RegisterReq) (resp *types.RegisterResp, err error) {
-	// todo: add your logic here and delete this line
-
-	return
+func (l *RegisterLogic) Register(req *types.RegisterReq) (*types.RegisterResp, error) {
+	if req.UserName == "" || req.Password == "" {
+		return &types.RegisterResp{
+			StatusCode: utils.FAILED,
+			StatusMsg:  "用户名或密码不能为空",
+		}, nil
+	}
+	resp, err := l.svcCtx.UserService.Register(l.ctx, &user.RegisterReq{
+		UserName: req.UserName,
+		Password: req.Password,
+	})
+	if err != nil {
+		if s, ok := status.FromError(err); !ok {
+			return &types.RegisterResp{
+				StatusCode: utils.FAILED,
+				StatusMsg:  s.Message(),
+			}, nil
+		} else {
+			return nil, err
+		}
+	}
+	return &types.RegisterResp{
+		StatusCode: utils.SUCCESS,
+		StatusMsg:  "注册成功",
+		UserId:     resp.UserId,
+		Token:      resp.Token,
+	}, nil
 }

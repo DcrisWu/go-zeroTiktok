@@ -1,0 +1,48 @@
+syntax = "proto3";
+
+package user;
+option go_package = "./user";
+
+message RegisterReq {
+  string UserName = 1;
+  string Password = 2;
+}
+
+message RegisterResp {
+  int64 status = 1; // 1: success, 0: fail
+  int64 UserId = 2;
+  string Token = 3;
+}
+
+message LoginReq{
+  string UserName = 1;
+  string Password = 2;
+}
+
+message LoginResp{
+  int64 status = 1;
+  int64 UserId = 2;
+  string Token = 3;
+}
+
+message UserReq{
+  int64 UserId = 1;
+}
+
+message UserInfo{
+  int64 Id = 1;
+  string Name = 2;
+  int64 FollowCount = 3;
+  int64 FollowerCount = 4;
+}
+
+message UserResp{
+  int64 status = 1;
+  UserInfo user = 2;
+}
+
+service User {
+  rpc register(RegisterReq) returns(RegisterResp);
+  rpc login(LoginReq) returns(LoginResp);
+  rpc getUserById(UserReq) returns(UserResp);
+}
