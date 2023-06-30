@@ -34,7 +34,6 @@ type User struct {
 }
 
 type UserReq struct {
-	UserId int64 `json:"user_id"` // 用户id
 }
 
 type UserResp struct {

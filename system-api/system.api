@@ -41,7 +41,6 @@ type (
 	}
 
 	UserReq {
-		UserId int64 `json:"user_id"` // 用户id
 	}
 
 	UserResp {
@@ -71,7 +70,7 @@ service system-api {
 service system-api {
 	@doc "获取用户信息"
 	@handler GetUserMsg
-	post /tiktok/user (UserReq) returns (UserResp)
+	get /tiktok/user (UserReq) returns (UserResp)
 }
 
 // 获取视频流 API
