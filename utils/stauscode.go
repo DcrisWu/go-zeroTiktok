@@ -7,4 +7,3 @@ const FAILED int64 = 2
 
 const PayLoadNotFound = -10001
 const UidNotFound = -10002
-const ItemNotFound = -10003
