@@ -39,7 +39,7 @@ type UserReq struct {
 type UserResp struct {
 	StatusCode int64  `json:"status_code"` // 状态码 0-成功 1-失败
 	StatusMsg  string `json:"status_msg"`  // 状态信息
-	User       User   `json:"user"`        // 用户信息
+	User       *User  `json:"user"`        // 用户信息
 }
 
 type FeedReq struct {

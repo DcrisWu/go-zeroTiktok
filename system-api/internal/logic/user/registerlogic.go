@@ -2,12 +2,12 @@ package user
 
 import (
 	"context"
+	"go-zeroTiktok/system-api/internal/svc"
+	"go-zeroTiktok/system-api/internal/types"
 	"go-zeroTiktok/user-service/pb/user"
 	"go-zeroTiktok/utils"
 	"google.golang.org/grpc/status"
-
-	"go-zeroTiktok/system-api/internal/svc"
-	"go-zeroTiktok/system-api/internal/types"
+	"time"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -47,10 +47,13 @@ func (l *RegisterLogic) Register(req *types.RegisterReq) (*types.RegisterResp, e
 			return nil, err
 		}
 	}
+	payload := make(map[string]interface{})
+	payload["uid"] = resp.UserId
+	token, err := utils.GenerateToken(l.svcCtx.Config.Auth.AccessSecret, time.Now().Unix()+l.svcCtx.Config.Auth.AccessExpire, l.svcCtx.Config.Auth.AccessExpire, payload)
 	return &types.RegisterResp{
 		StatusCode: utils.SUCCESS,
 		StatusMsg:  "注册成功",
 		UserId:     resp.UserId,
-		Token:      resp.Token,
+		Token:      token,
 	}, nil
 }

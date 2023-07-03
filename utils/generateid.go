@@ -1,6 +1,9 @@
 package utils
 
-import "math/rand"
+import (
+	"math/rand"
+	"time"
+)
 
 type IdGenerator interface {
 	GenerateId() (int64, error)
@@ -12,7 +15,7 @@ type BasicGenerator struct {
 
 func NewBasicGenerator() *BasicGenerator {
 	return &BasicGenerator{
-		rand: *rand.New(rand.NewSource(1)),
+		rand: *rand.New(rand.NewSource(time.Now().Unix())),
 	}
 }
 

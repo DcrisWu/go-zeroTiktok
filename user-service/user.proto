@@ -11,7 +11,6 @@ message RegisterReq {
 message RegisterResp {
   int64 status = 1; // 1: success, 0: fail
   int64 UserId = 2;
-  string Token = 3;
 }
 
 message LoginReq{
@@ -22,7 +21,6 @@ message LoginReq{
 message LoginResp{
   int64 status = 1;
   int64 UserId = 2;
-  string Token = 3;
 }
 
 message UserReq{
@@ -37,8 +35,9 @@ message UserInfo{
 }
 
 message UserResp{
-  int64 status = 1;
+  int64 status = 1;// 0: success, 1: fail
   UserInfo user = 2;
+  bool isFollow = 3;
 }
 
 service User {

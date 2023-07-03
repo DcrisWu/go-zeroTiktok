@@ -1,0 +1,2 @@
+api:
+	goctl api go -api system.api -dir ./

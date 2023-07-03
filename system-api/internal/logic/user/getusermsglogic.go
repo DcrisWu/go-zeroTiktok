@@ -2,6 +2,9 @@ package user
 
 import (
 	"context"
+	"go-zeroTiktok/user-service/pb/user"
+	"go-zeroTiktok/utils"
+	"google.golang.org/grpc/status"
 
 	"go-zeroTiktok/system-api/internal/svc"
 	"go-zeroTiktok/system-api/internal/types"
@@ -24,7 +27,35 @@ func NewGetUserMsgLogic(ctx context.Context, svcCtx *svc.ServiceContext) *GetUse
 }
 
 func (l *GetUserMsgLogic) GetUserMsg(req *types.UserReq) (resp *types.UserResp, err error) {
-	// todo: add your logic here and delete this line
-
-	return
+	uid := utils.GetUid(l.ctx)
+	if uid == utils.UidNotFound {
+		return &types.UserResp{
+			StatusCode: utils.FAILED,
+			StatusMsg:  "用户不存在",
+		}, nil
+	}
+	userResp, err := l.svcCtx.UserService.GetUserById(l.ctx, &user.UserReq{
+		UserId: uid,
+	})
+	if err != nil {
+		if s, ok := status.FromError(err); !ok {
+			return &types.UserResp{
+				StatusCode: utils.FAILED,
+				StatusMsg:  s.Message(),
+			}, nil
+		} else {
+			return nil, err
+		}
+	}
+	return &types.UserResp{
+		StatusCode: utils.SUCCESS,
+		StatusMsg:  "获取用户信息成功",
+		User: &types.User{
+			Id:            userResp.User.Id,
+			Name:          userResp.User.Name,
+			FollowCount:   userResp.User.FollowCount,
+			FollowerCount: userResp.User.FollowerCount,
+			IsFollow:      userResp.IsFollow,
+		},
+	}, nil
 }

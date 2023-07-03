@@ -8,4 +8,4 @@ create table comment
     updated_at datetime        not null default current_timestamp on update current_timestamp,
     deleted_at datetime                 default null,
     primary key (id)
-)
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
