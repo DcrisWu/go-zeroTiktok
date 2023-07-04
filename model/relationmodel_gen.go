@@ -26,6 +26,7 @@ type (
 	relationModel interface {
 		Insert(ctx context.Context, data *Relation) (sql.Result, error)
 		FindOne(ctx context.Context, id int64) (*Relation, error)
+		FindOneByUserIdToUserId(ctx context.Context, userId int64, toUserId int64) (*Relation, error)
 		Update(ctx context.Context, data *Relation) error
 		Delete(ctx context.Context, id int64) error
 	}
@@ -72,15 +73,29 @@ func (m *defaultRelationModel) FindOne(ctx context.Context, id int64) (*Relation
 	}
 }
 
+func (m *defaultRelationModel) FindOneByUserIdToUserId(ctx context.Context, userId int64, toUserId int64) (*Relation, error) {
+	var resp Relation
+	query := fmt.Sprintf("select %s from %s where `user_id` = ? and `to_user_id` = ? limit 1", relationRows, m.table)
+	err := m.conn.QueryRowCtx(ctx, &resp, query, userId, toUserId)
+	switch err {
+	case nil:
+		return &resp, nil
+	case sqlc.ErrNotFound:
+		return nil, ErrNotFound
+	default:
+		return nil, err
+	}
+}
+
 func (m *defaultRelationModel) Insert(ctx context.Context, data *Relation) (sql.Result, error) {
 	query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?)", m.table, relationRowsExpectAutoSet)
 	ret, err := m.conn.ExecCtx(ctx, query, data.Id, data.UserId, data.ToUserId, data.DeletedAt)
 	return ret, err
 }
 
-func (m *defaultRelationModel) Update(ctx context.Context, data *Relation) error {
+func (m *defaultRelationModel) Update(ctx context.Context, newData *Relation) error {
 	query := fmt.Sprintf("update %s set %s where `id` = ?", m.table, relationRowsWithPlaceHolder)
-	_, err := m.conn.ExecCtx(ctx, query, data.UserId, data.ToUserId, data.DeletedAt, data.Id)
+	_, err := m.conn.ExecCtx(ctx, query, newData.UserId, newData.ToUserId, newData.DeletedAt, newData.Id)
 	return err
 }
 

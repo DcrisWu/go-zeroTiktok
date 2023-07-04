@@ -9,3 +9,6 @@ relation:
 
 video:
 	goctl model mysql ddl -src sql/video.sql -dir .
+
+favorite:
+	goctl model mysql ddl -src sql/favorite.sql -dir .

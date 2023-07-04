@@ -7,8 +7,11 @@ create table video
     favorite_count bigint unsigned not null default 0,
     comment_count  bigint unsigned not null default 0,
     title          varchar(50)     not null,
-    created_at      datetime        not null default current_timestamp,
-    updated_at      datetime        not null default current_timestamp on update current_timestamp,
-    deleted_at      datetime                 default null,
-    primary key (id)
-)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    created_at     datetime        not null default current_timestamp,
+    updated_at     datetime        not null default current_timestamp on update current_timestamp,
+    deleted_at     datetime                 default null,
+    primary key (id),
+    key idx_author_id (author_id),
+    index idx_created_at (created_at)
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4;
