@@ -1,0 +1,5 @@
+demo-gen:
+	goctl rpc --o feed.proto
+
+feed-gen:
+	goctl rpc protoc feed.proto --go_out=./pb --go-grpc_out=./pb --zrpc_out=.
