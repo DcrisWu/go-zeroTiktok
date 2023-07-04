@@ -2,6 +2,7 @@ package logic
 
 import (
 	"context"
+	"go-zeroTiktok/model"
 	logic "go-zeroTiktok/user-service/internal/logic/userutils"
 	"go-zeroTiktok/user-service/internal/svc"
 	"go-zeroTiktok/user-service/pb/user"
@@ -42,11 +43,11 @@ func (l *LoginLogic) Login(in *user.LoginReq) (*user.LoginResp, error) {
 
 func (l *LoginLogic) CheckUser(in *user.LoginReq) (int64, error) {
 	u, err := l.svcCtx.UserModel.FindOneByUserName(l.ctx, in.UserName)
-	if err != nil {
+	if err != nil && err != model.ErrNotFound {
 		logx.Error(err)
 		return 0, err
 	}
-	if u == nil {
+	if err == model.ErrNotFound {
 		return 0, status.Error(400, "用户不存在")
 	}
 	match, err := logic.ComparePasswordAndHash(in.Password, u.Password)

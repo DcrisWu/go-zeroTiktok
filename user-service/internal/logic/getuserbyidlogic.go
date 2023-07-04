@@ -2,6 +2,7 @@ package logic
 
 import (
 	"context"
+	"go-zeroTiktok/model"
 	"go-zeroTiktok/user-service/internal/svc"
 	"go-zeroTiktok/user-service/pb/user"
 
@@ -35,6 +36,17 @@ func (l *GetUserByIdLogic) GetUserById(in *user.UserReq) (*user.UserResp, error)
 		}, nil
 	}
 
+	isFollow := false
+	if in.UserId != in.Uid {
+		rel, err := l.svcCtx.RelationModel.FindOneByUserIdToUserId(l.ctx, in.Uid, in.UserId)
+		if err != nil && err != model.ErrNotFound {
+			return nil, err
+		}
+		if rel != nil {
+			isFollow = true
+		}
+	}
+
 	return &user.UserResp{
 		Status: 0,
 		User: &user.UserInfo{
@@ -43,6 +55,6 @@ func (l *GetUserByIdLogic) GetUserById(in *user.UserReq) (*user.UserResp, error)
 			FollowCount:   one.FollowingCount,
 			FollowerCount: one.FollowerCount,
 		},
-		// todo isFollow
+		IsFollow: isFollow,
 	}, nil
 }

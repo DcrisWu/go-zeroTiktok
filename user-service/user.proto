@@ -24,7 +24,8 @@ message LoginResp{
 }
 
 message UserReq{
-  int64 UserId = 1;
+  int64 Uid = 1;
+  int64 UserId = 2;
 }
 
 message UserInfo{

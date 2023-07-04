@@ -52,10 +52,13 @@ func (l *RegisterLogic) Register(in *user.RegisterReq) (*user.RegisterResp, erro
 }
 
 func (l *RegisterLogic) CreateUser(in *user.RegisterReq, argon2Params *config.Argon2Params) (int64, error) {
-	_, err := l.svcCtx.UserModel.FindOneByUserName(l.ctx, in.UserName)
+	u, err := l.svcCtx.UserModel.FindOneByUserName(l.ctx, in.UserName)
 	if err != nil && err != model.ErrNotFound {
 		logx.Error(err)
 		return 0, err
+	}
+	if u != nil {
+		return 0, status.Error(400, "用户已存在")
 	}
 	password, err := logic.GenerateFromPassword(in.Password, argon2Params)
 	if err != nil {
@@ -73,23 +76,22 @@ func (l *RegisterLogic) CreateUser(in *user.RegisterReq, argon2Params *config.Ar
 	if err != nil {
 		logx.Error(err)
 		return 0, err
-
 	}
 	return id, nil
 }
 
 func (l *RegisterLogic) CheckUser(in *user.RegisterReq) (int64, error) {
 	u, err := l.svcCtx.UserModel.FindOneByUserName(l.ctx, in.UserName)
-	if err != nil {
-		if err == model.ErrNotFound {
-			return 0, status.Error(400, "用户不存在")
-		} else {
-			return 0, status.Error(500, "注册失败")
-		}
+	if err != nil && err != model.ErrNotFound {
+		logx.Error(err)
+		return 0, err
+	}
+	if err == model.ErrNotFound {
+		return 0, status.Error(400, "用户不存在")
 	}
 	match, err := logic.ComparePasswordAndHash(in.Password, u.Password)
 	if err != nil {
-		return utils.UidNotFound, err
+		return 0, err
 	}
 	if !match {
 		return 0, status.Error(400, "密码错误")
