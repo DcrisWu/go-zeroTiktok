@@ -1,2 +1,5 @@
 api:
 	goctl api go -api system.api -dir ./
+
+api-swagger:
+	goctl api plugin -plugin goctl-swagger="swagger --filename hr-swagger.json" --api hr.api -dir .

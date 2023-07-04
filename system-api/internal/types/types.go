@@ -34,6 +34,7 @@ type User struct {
 }
 
 type UserReq struct {
+	UserId int64 `json:"user_id"`
 }
 
 type UserResp struct {
@@ -48,7 +49,7 @@ type FeedReq struct {
 
 type Video struct {
 	Id            int64  `json:"id"`
-	Author        User   `json:"author"`
+	Author        *User  `json:"author"`
 	PlayUrl       string `json:"play_url"`       // 播放地址
 	CoverUrl      string `json:"cover_url"`      // 封面地址
 	FavoriteCount int64  `json:"favorite_count"` // 收藏数
@@ -64,14 +65,30 @@ type FeedResp struct {
 	VideoList []Video `json:"video_list"`
 }
 
-type PublishReq struct {
-	Data  []byte `form:"data"`
-	Title string `form:"title"`
+type DataInfo struct {
+	PlayUrl  string `json:"play_url"`
+	CoverUrl string `json:"cover_url"`
 }
 
-type PublishResp struct {
-	StatusCode int64  `json:"status_code"`
+type PublishActionReq struct {
+	Data  DataInfo `form:"data"`
+	Title string   `form:"title"`
+}
+
+type PublishActionResp struct {
+	StatusCode int64  `json:"status_code"` // 状态码 1-成功 2-失败
 	StatusMsg  string `json:"status_msg"`
+	VideoId    int64  `json:"video_id"`
+}
+
+type PublishListReq struct {
+	UserId int64 `json:"user_id"`
+}
+
+type PublishListResp struct {
+	StatusCode int64    `json:"status_code"`
+	StatusMsg  string   `json:"status_msg"`
+	VideoList  []*Video `json:"video_list"`
 }
 
 type Comment struct {

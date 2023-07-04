@@ -35,7 +35,8 @@ func (l *GetUserMsgLogic) GetUserMsg(req *types.UserReq) (resp *types.UserResp, 
 		}, nil
 	}
 	userResp, err := l.svcCtx.UserService.GetUserById(l.ctx, &user.UserReq{
-		UserId: uid,
+		Uid:    uid,
+		UserId: req.UserId,
 	})
 	if err != nil {
 		if s, ok := status.FromError(err); !ok {

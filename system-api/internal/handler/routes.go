@@ -57,7 +57,12 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 			{
 				Method:  http.MethodPost,
 				Path:    "/tiktok/publish/action",
-				Handler: publish.PublishActionHandler(serverCtx),
+				Handler: publish.ActionHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodGet,
+				Path:    "/tiktok/publish/list",
+				Handler: publish.ListHandler(serverCtx),
 			},
 		},
 		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),

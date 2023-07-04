@@ -41,6 +41,7 @@ type (
 	}
 
 	UserReq {
+		UserId int64 `json:"user_id"`
 	}
 
 	UserResp {
@@ -81,7 +82,7 @@ type (
 
 	Video {
 		Id            int64  `json:"id"`
-		Author        User   `json:"author"`
+		Author        *User  `json:"author"`
 		PlayUrl       string `json:"play_url"`       // 播放地址
 		CoverUrl      string `json:"cover_url"`      // 封面地址
 		FavoriteCount int64  `json:"favorite_count"` // 收藏数
@@ -109,14 +110,30 @@ service system-api {
 
 // 发布视频 API
 type (
-	PublishReq {
-		Data  []byte `form:"data"`
-		Title string `form:"title"`
+	DataInfo {
+		PlayUrl  string `json:"play_url"`
+		CoverUrl string `json:"cover_url"`
 	}
 
-	PublishResp {
-		StatusCode int64  `json:"status_code"`
+	PublishActionReq {
+		Data  DataInfo `form:"data"`
+		Title string   `form:"title"`
+	}
+
+	PublishActionResp {
+		StatusCode int64  `json:"status_code"` // 状态码 1-成功 2-失败
 		StatusMsg  string `json:"status_msg"`
+		VideoId    int64  `json:"video_id"`
+	}
+
+	PublishListReq {
+		UserId int64 `json:"user_id"`
+	}
+
+	PublishListResp {
+		StatusCode int64    `json:"status_code"`
+		StatusMsg  string   `json:"status_msg"`
+		VideoList  []*Video `json:"video_list"`
 	}
 )
 
@@ -126,8 +143,12 @@ type (
 )
 service system-api {
 	@doc "发布视频操作 "
-	@handler PublishAction
-	post /tiktok/publish/action (PublishReq) returns (PublishResp)
+	@handler Action
+	post /tiktok/publish/action (PublishActionReq) returns (PublishActionResp)
+	
+	@doc "获取用户发布的视频列表"
+	@handler List
+	get /tiktok/publish/list (PublishListReq) returns (PublishListResp)
 }
 
 // 评论系统 API
