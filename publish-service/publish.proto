@@ -1,0 +1,48 @@
+syntax = "proto3";
+
+package publish;
+option go_package = "./publish";
+
+message ActionReq {
+  int64 AuthorId = 1;
+  string PlayUrl = 2;
+  string CoverUrl = 3;
+  string Title = 4;
+}
+
+message ActionResp {
+  int64 VideoId = 1;
+}
+
+message ListReq{
+  int64 uid = 1;
+  int64 AuthorId = 2;
+}
+
+message User{
+  int64 Id = 1;
+  string Name = 2;
+  int64 FollowCount = 3;
+  int64 FollowerCount = 4;
+  bool isFollow = 5;
+}
+
+message Video{
+  int64 Id = 1;
+  User Author = 2;
+  string PlayUrl = 3;
+  string CoverUrl = 4;
+  int64 favorCount = 5;
+  int64 CommentCount = 6;
+  bool isFavor = 7;
+  string Title = 8;
+}
+
+message ListResp{
+  repeated Video VideoList = 3;
+}
+
+service Publish {
+  rpc Action(ActionReq) returns(ActionResp);
+  rpc List(ListReq) returns(ListResp);
+}
