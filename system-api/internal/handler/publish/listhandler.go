@@ -9,16 +9,16 @@ import (
 	"go-zeroTiktok/system-api/internal/types"
 )
 
-func PublishActionHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
+func ListHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var req types.PublishActionReq
+		var req types.PublishListReq
 		if err := httpx.Parse(r, &req); err != nil {
 			httpx.ErrorCtx(r.Context(), w, err)
 			return
 		}
 
-		l := publish.NewActionLogic(r.Context(), svcCtx)
-		resp, err := l.Action(&req)
+		l := publish.NewListLogic(r.Context(), svcCtx)
+		resp, err := l.List(&req)
 		if err != nil {
 			httpx.ErrorCtx(r.Context(), w, err)
 		} else {
