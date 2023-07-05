@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/base64"
 	"encoding/json"
+	"fmt"
 	"github.com/golang-jwt/jwt/v4"
 	"strconv"
 )
@@ -13,24 +14,47 @@ const keyUid = "uid"
 const keyExp = "exp"
 const keyIat = "iat"
 
-// GenerateToken 生成token
+// GenerateJwt 生成token
 // @secretKey: JWT 加解密密钥
 // @iat: 时间戳
 // @seconds: 过期时间，单位秒
 // @payload: 数据载体
-func GenerateToken(secretKey string, iat, seconds int64, payload map[string]interface{}) (string, error) {
-	claims := make(jwt.MapClaims)
-	claims[keyExp] = iat + seconds
-	claims[keyIat] = iat
-	marshal, err := json.Marshal(payload)
-	if err != nil {
-		return "", err
-	}
-	str := base64.StdEncoding.EncodeToString(marshal)
-	claims[keyPayload] = str
+func GenerateJwt(secretKey string, iat, seconds int64, payload map[string]interface{}) (string, error) {
 	token := jwt.New(jwt.SigningMethodHS256)
-	token.Claims = claims
-	return token.SignedString([]byte(secretKey))
+
+	// Set some claims
+	token.Claims = jwt.MapClaims{
+		keyExp:     iat + seconds,
+		keyIat:     iat,
+		keyPayload: payload,
+	}
+
+	// Sign and get the complete encoded token as a string
+	tokenString, err := token.SignedString([]byte(secretKey))
+
+	return tokenString, err
+}
+
+func ParseJWT(tokenString string, secretKey string) (map[string]interface{}, error) {
+	// Parse the token
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		return []byte(secretKey), nil
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+		// Convert the payload to map[string]interface{}
+		payload, ok := claims[keyPayload].(map[string]interface{})
+		if !ok {
+			return nil, fmt.Errorf("invalid payload")
+		}
+		return payload, nil
+	} else {
+		return nil, err
+	}
 }
 
 func GetUid(ctx context.Context) int64 {

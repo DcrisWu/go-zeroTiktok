@@ -37,9 +37,11 @@ func (l *FeedLogic) Feed(in *feed.FeedReq) (*feed.FeedResp, error) {
 		return nil, status.Error(500, err.Error())
 	}
 
+	var earliestTime = time.Now()
 	var videoList []*feed.Video
 	for _, i := range list {
 		one, err := l.svcCtx.UserModel.FindOne(l.ctx, i.AuthorId)
+		earliestTime = minTime(earliestTime, i.CreatedAt)
 		if err != nil {
 			return nil, status.Error(500, err.Error())
 		}
@@ -81,6 +83,14 @@ func (l *FeedLogic) Feed(in *feed.FeedReq) (*feed.FeedResp, error) {
 		})
 	}
 	return &feed.FeedResp{
-		VideoList: videoList,
+		VideoList:    videoList,
+		EarliestTime: earliestTime.Unix(),
 	}, nil
+}
+
+func minTime(a, b time.Time) time.Time {
+	if a.Before(b) {
+		return a
+	}
+	return b
 }

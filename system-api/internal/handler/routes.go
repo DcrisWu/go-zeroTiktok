@@ -46,7 +46,7 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 		[]rest.Route{
 			{
 				Method:  http.MethodGet,
-				Path:    "/tiktok/feed/:latest_time",
+				Path:    "/tiktok/feed",
 				Handler: feed.GetVideoListHandler(serverCtx),
 			},
 		},

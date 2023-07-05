@@ -28,7 +28,8 @@ message Video{
 }
 
 message FeedResp{
-  repeated Video VideoList = 3;
+  repeated Video VideoList = 1;
+  int64 earliestTime = 2;
 }
 
 service Feed {

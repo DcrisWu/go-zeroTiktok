@@ -34,7 +34,7 @@ type User struct {
 }
 
 type UserReq struct {
-	UserId int64 `json:"user_id"`
+	UserId int64 `form:"user_id"`
 }
 
 type UserResp struct {
@@ -44,7 +44,8 @@ type UserResp struct {
 }
 
 type FeedReq struct {
-	LatestTime string `path:"latest_time"`
+	Authorization string `header:"Authorization,optional"` // token
+	LatestTime    string `json:"latest_time,optional"`     // 最新视频的时间，格式 yyyy-mm-dd hh:mm:ss
 }
 
 type Video struct {
@@ -59,10 +60,10 @@ type Video struct {
 }
 
 type FeedResp struct {
-	StatsCode int64   `json:"stats_code"`
-	StatusMsg string  `json:"status_msg"`
-	NextTime  int64   `json:"next_time"`
-	VideoList []Video `json:"video_list"`
+	StatsCode int64    `json:"stats_code"`
+	StatusMsg string   `json:"status_msg"`
+	NextTime  int64    `json:"next_time"`
+	VideoList []*Video `json:"video_list"`
 }
 
 type DataInfo struct {

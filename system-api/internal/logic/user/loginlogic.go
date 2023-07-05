@@ -53,7 +53,7 @@ func (l *LoginLogic) Login(req *types.LoginReq) (*types.LoginResp, error) {
 	payload := make(map[string]interface{})
 	// js 的 number 类型最大值为 2^53 - 1，超过这个值会丢失精度，所以这里需要转成字符串
 	payload["uid"] = strconv.FormatInt(resp.UserId, 10)
-	token, err := utils.GenerateToken(l.svcCtx.Config.Auth.AccessSecret, time.Now().Unix(), l.svcCtx.Config.Auth.AccessExpire, payload)
+	token, err := utils.GenerateJwt(l.svcCtx.Config.Auth.AccessSecret, time.Now().Unix(), l.svcCtx.Config.Auth.AccessExpire, payload)
 	return &types.LoginResp{
 		StatusCode: utils.SUCCESS,
 		StatusMsg:  "登陆成功",
