@@ -1,0 +1,45 @@
+syntax = "proto3";
+
+package comment;
+option go_package = "./comment";
+
+message CreateCommentReq {
+  int64 Uid = 1;
+  int64 VideoId = 2;
+  string Content = 3;
+}
+
+message CreateCommentResp {
+  int64 CommentId = 1;
+  string CreatedAt = 2; // 评论发布日期，格式 mm-dd
+}
+
+message DeleteCommentReq {
+  int64 Uid = 1;
+  int64 VideoId = 2;
+}
+
+message DeleteCommentResp {
+  bool IsDeleted = 1;
+}
+
+message CommentListReq {
+  int64 VideoId = 1;
+}
+
+message CommentInfo{
+  int64 CommentId = 1;
+  int64 UserId = 2;
+  string Content = 3;
+  string CreatedAt = 4;
+}
+
+message CommentListResp {
+  repeated  CommentInfo CommentList = 1;
+}
+
+service Comment {
+  rpc CreateComment(CreateCommentReq) returns(CreateCommentResp);
+  rpc DeleteComment(DeleteCommentReq) returns(DeleteCommentResp);
+  rpc CommentList(CommentListReq) returns(CommentListResp);
+}

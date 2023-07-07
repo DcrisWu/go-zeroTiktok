@@ -23,3 +23,8 @@ func (g *BasicGenerator) GenerateId() (int64, error) {
 	id := g.rand.Int63()
 	return id, nil
 }
+
+func (g *BasicGenerator) GenerateCommentId() (int64, error) {
+	id := g.rand.Int63()
+	return id, nil
+}

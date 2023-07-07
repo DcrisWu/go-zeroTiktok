@@ -7,5 +7,8 @@ create table comment
     created_at datetime        not null default current_timestamp,
     updated_at datetime        not null default current_timestamp on update current_timestamp,
     deleted_at datetime                 default null,
-    primary key (id)
-)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    primary key (id),
+    key video_id (video_id),
+    unique key user_id_video_id (user_id, video_id)
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4;

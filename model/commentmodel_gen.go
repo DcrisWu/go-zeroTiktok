@@ -26,6 +26,7 @@ type (
 	commentModel interface {
 		Insert(ctx context.Context, data *Comment) (sql.Result, error)
 		FindOne(ctx context.Context, id int64) (*Comment, error)
+		FindOneByUserIdVideoId(ctx context.Context, userId int64, videoId int64) (*Comment, error)
 		Update(ctx context.Context, data *Comment) error
 		Delete(ctx context.Context, id int64) error
 	}
@@ -73,15 +74,29 @@ func (m *defaultCommentModel) FindOne(ctx context.Context, id int64) (*Comment, 
 	}
 }
 
+func (m *defaultCommentModel) FindOneByUserIdVideoId(ctx context.Context, userId int64, videoId int64) (*Comment, error) {
+	var resp Comment
+	query := fmt.Sprintf("select %s from %s where `user_id` = ? and `video_id` = ? limit 1", commentRows, m.table)
+	err := m.conn.QueryRowCtx(ctx, &resp, query, userId, videoId)
+	switch err {
+	case nil:
+		return &resp, nil
+	case sqlc.ErrNotFound:
+		return nil, ErrNotFound
+	default:
+		return nil, err
+	}
+}
+
 func (m *defaultCommentModel) Insert(ctx context.Context, data *Comment) (sql.Result, error) {
 	query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?, ?)", m.table, commentRowsExpectAutoSet)
 	ret, err := m.conn.ExecCtx(ctx, query, data.Id, data.UserId, data.VideoId, data.Content, data.DeletedAt)
 	return ret, err
 }
 
-func (m *defaultCommentModel) Update(ctx context.Context, data *Comment) error {
+func (m *defaultCommentModel) Update(ctx context.Context, newData *Comment) error {
 	query := fmt.Sprintf("update %s set %s where `id` = ?", m.table, commentRowsWithPlaceHolder)
-	_, err := m.conn.ExecCtx(ctx, query, data.UserId, data.VideoId, data.Content, data.DeletedAt, data.Id)
+	_, err := m.conn.ExecCtx(ctx, query, newData.UserId, newData.VideoId, newData.Content, newData.DeletedAt, newData.Id)
 	return err
 }
 

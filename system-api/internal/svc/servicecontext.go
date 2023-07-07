@@ -2,6 +2,7 @@ package svc
 
 import (
 	"github.com/zeromicro/go-zero/zrpc"
+	"go-zeroTiktok/comment-service/pb/comment"
 	"go-zeroTiktok/feed-service/pb/feed"
 	"go-zeroTiktok/publish-service/pb/publish"
 	"go-zeroTiktok/system-api/internal/config"
@@ -13,6 +14,7 @@ type ServiceContext struct {
 	UserService    user.UserClient
 	PublishService publish.PublishClient
 	FeedService    feed.FeedClient
+	CommentService comment.CommentClient
 }
 
 var (
@@ -25,6 +27,9 @@ var (
 	feedCfg = zrpc.RpcClientConf{
 		Endpoints: []string{"127.0.0.1:8082"},
 	}
+	commentCfg = zrpc.RpcClientConf{
+		Endpoints: []string{"127.0.0.1:8083"},
+	}
 )
 
 func NewServiceContext(c config.Config) *ServiceContext {
@@ -32,10 +37,12 @@ func NewServiceContext(c config.Config) *ServiceContext {
 	userConn := zrpc.MustNewClient(userCfg)
 	publishConn := zrpc.MustNewClient(publishCfg)
 	feedConn := zrpc.MustNewClient(feedCfg)
+	commentConn := zrpc.MustNewClient(commentCfg)
 	return &ServiceContext{
 		Config:         c,
 		UserService:    user.NewUserClient(userConn.Conn()),
 		PublishService: publish.NewPublishClient(publishConn.Conn()),
 		FeedService:    feed.NewFeedClient(feedConn.Conn()),
+		CommentService: comment.NewCommentClient(commentConn.Conn()),
 	}
 }

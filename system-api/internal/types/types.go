@@ -94,32 +94,32 @@ type PublishListResp struct {
 
 type Comment struct {
 	Id         int64  `json:"id"`
-	UserObj    User   `json:"user_obj"`
+	UserInfo   *User  `json:"user"`        // 评论用户信息
 	Content    string `json:"content"`     // 评论内容
 	CreateDate string `json:"create_date"` // 评论发布日期，格式 mm-dd
 }
 
 type CommentActionReq struct {
-	VideoId     string `json:"vedio_id"`     // 视频id
-	ActionType  string `json:"action_type"`  // 1-发布评论，2-删除评论
-	CommentText string `json:"comment_text"` // 可选，用户填写的评论内容，在action_type=1的时候使用
-	CommentId   string `json:"comment_id"`   // 可选，要删除的评论id，在action_type=2的时候使用
+	VideoId     string `json:"vedio_id"`              // 视频id
+	ActionType  string `json:"action_type"`           // 1-发布评论，2-删除评论
+	CommentText string `json:"comment_text,optional"` // 可选，用户填写的评论内容，在action_type=1的时候使用
+	CommentId   string `json:"comment_id,optional"`   // 可选，要删除的评论id，在action_type=2的时候使用
 }
 
 type CommentActionResp struct {
-	StatusCode int64   `json:"status_code"`
-	StatusMsg  string  `json:"status_msg"`
-	CommentObj Comment `json:"comment_obj"` // 多选一且必须只能符合下列其中一组子节点（即XOR，异或关系
+	StatusCode int64    `json:"status_code"`
+	StatusMsg  string   `json:"status_msg"`
+	CommentObj *Comment `json:"comment,optional"` // 多选一且必须只能符合下列其中一组子节点（即XOR，
 }
 
 type CommentListReq struct {
-	VedioId string `path:"vedio_id"`
+	VedioId string `form:"vedioId"`
 }
 
 type CommentListResp struct {
-	StatusCode  int64     `json:"status_code"`
-	StatusMsg   string    `json:"status_msg"`
-	CommentList []Comment `json:"array"`
+	StatusCode  int64      `json:"status_code"`
+	StatusMsg   string     `json:"status_msg"`
+	CommentList []*Comment `json:"array"`
 }
 
 type FavoriteActionReq struct {

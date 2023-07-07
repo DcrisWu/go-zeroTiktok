@@ -15,11 +15,13 @@ type ServiceContext struct {
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
+	sqlConn := sqlx.NewMysql(c.DataSource)
+
 	return &ServiceContext{
 		Config:        c,
-		VideoModel:    model.NewVideoModel(sqlx.NewMysql(c.DataSource)),
-		UserModel:     model.NewUserModel(sqlx.NewMysql(c.DataSource)),
-		FavoriteModel: model.NewFavoriteModel(sqlx.NewMysql(c.DataSource)),
-		RelationModel: model.NewRelationModel(sqlx.NewMysql(c.DataSource)),
+		VideoModel:    model.NewVideoModel(sqlConn),
+		UserModel:     model.NewUserModel(sqlConn),
+		FavoriteModel: model.NewFavoriteModel(sqlConn),
+		RelationModel: model.NewRelationModel(sqlConn),
 	}
 }
