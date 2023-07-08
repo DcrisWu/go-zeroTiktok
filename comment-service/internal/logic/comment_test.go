@@ -4,23 +4,32 @@ import (
 	"context"
 	"fmt"
 	"github.com/stretchr/testify/assert"
-	"github.com/zeromicro/go-zero/core/stores/sqlx"
 	"go-zeroTiktok/comment-service/internal/config"
 	"go-zeroTiktok/comment-service/internal/svc"
 	"go-zeroTiktok/comment-service/pb/comment"
-	"go-zeroTiktok/model"
+	"go-zeroTiktok/models/db"
+	"gorm.io/driver/mysql"
+	"gorm.io/gorm"
+	"gorm.io/gorm/schema"
 	"testing"
 )
 
 func NewServiceContext4Test() *svc.ServiceContext {
-	c := &config.Config{
+	c := config.Config{
 		DataSource: "root:Wu9121522521@@tcp(localhost:3306)/tiktok?parseTime=true",
 	}
-	sqlConn := sqlx.NewMysql(c.DataSource)
+	database, err := gorm.Open(mysql.Open(c.DataSource), &gorm.Config{
+		NamingStrategy: schema.NamingStrategy{
+			SingularTable: true,
+		},
+	})
+	if err != nil {
+		panic(err)
+	}
+	database.AutoMigrate(&db.Comment{}, db.User{}, db.Relation{})
 	return &svc.ServiceContext{
-		MysqlConn:    sqlConn,
-		CommentModel: model.NewCommentModel(sqlConn),
-		VideoModel:   model.NewVideoModel(sqlConn),
+		Config: c,
+		DB:     database,
 	}
 }
 

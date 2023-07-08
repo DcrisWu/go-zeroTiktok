@@ -26,8 +26,8 @@ func NewCreateCommentLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Cre
 
 func (l *CreateCommentLogic) CreateComment(in *comment.CreateCommentReq) (*comment.CreateCommentResp, error) {
 	err := db.NewComment(l.ctx, l.svcCtx.DB, &db.Comment{
-		UserId:  in.Uid,
-		VideoId: in.VideoId,
+		UserId:  int(in.Uid),
+		VideoId: int(in.VideoId),
 		Content: in.Content,
 	})
 	if err != nil {
