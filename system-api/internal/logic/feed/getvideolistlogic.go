@@ -45,9 +45,20 @@ func (l *GetVideoListLogic) GetVideoList(req *types.FeedReq) (*types.FeedResp, e
 	}
 
 flag:
+	var latestTime int64
+	if len(req.LatestTime) != 0 {
+		if time, err := strconv.Atoi(req.LatestTime); err != nil {
+			return &types.FeedResp{
+				StatsCode: utils.FAILED,
+				StatusMsg: err.Error(),
+			}, nil
+		} else {
+			latestTime = int64(time)
+		}
+	}
 	in := &feed.FeedReq{
 		Uid:      uid,
-		LastTime: req.LatestTime,
+		LastTime: latestTime,
 	}
 	resp, err := l.svcCtx.FeedService.Feed(l.ctx, in)
 	if err != nil {
@@ -78,7 +89,7 @@ flag:
 	return &types.FeedResp{
 		StatsCode: utils.SUCCESS,
 		StatusMsg: "获取成功",
-		NextTime:  resp.EarliestTime,
+		NextTime:  resp.NextTime,
 		VideoList: videoList,
 	}, nil
 }

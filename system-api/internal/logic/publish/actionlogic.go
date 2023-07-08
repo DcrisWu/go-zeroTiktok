@@ -37,7 +37,7 @@ func (l *ActionLogic) Action(req *types.PublishActionReq) (*types.PublishActionR
 		CoverUrl: req.Data.CoverUrl,
 		Title:    req.Title,
 	})
-	if err != nil {
+	if err != nil || !action.IsSuccess {
 		return &types.PublishActionResp{
 			StatusCode: utils.FAILED,
 			StatusMsg:  err.Error(),
@@ -47,6 +47,5 @@ func (l *ActionLogic) Action(req *types.PublishActionReq) (*types.PublishActionR
 	return &types.PublishActionResp{
 		StatusCode: utils.SUCCESS,
 		StatusMsg:  "发布成功",
-		VideoId:    action.VideoId,
 	}, nil
 }

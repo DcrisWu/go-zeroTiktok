@@ -10,12 +10,11 @@ message CreateCommentReq {
 }
 
 message CreateCommentResp {
-  int64 CommentId = 1;
-  string CreatedAt = 2; // 评论发布日期，格式 mm-dd
+  string CreatedAt = 1; // 评论发布日期，格式 mm-dd
 }
 
 message DeleteCommentReq {
-  int64 Uid = 1;
+  int64 CommentId = 1;
   int64 VideoId = 2;
 }
 
@@ -24,12 +23,21 @@ message DeleteCommentResp {
 }
 
 message CommentListReq {
-  int64 VideoId = 1;
+  int64 Uid = 1;
+  int64 VideoId = 2;
+}
+
+message User{
+  int64 Id = 1;
+  string Name = 2;
+  int64 FollowCount = 3;
+  int64 FollowerCount = 4;
+  bool isFollow = 5;
 }
 
 message CommentInfo{
   int64 CommentId = 1;
-  int64 UserId = 2;
+  User User = 2;
   string Content = 3;
   string CreatedAt = 4;
 }

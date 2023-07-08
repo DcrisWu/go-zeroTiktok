@@ -56,7 +56,7 @@ func (l *GetUserMsgLogic) GetUserMsg(req *types.UserReq) (resp *types.UserResp, 
 			Name:          userResp.User.Name,
 			FollowCount:   userResp.User.FollowCount,
 			FollowerCount: userResp.User.FollowerCount,
-			IsFollow:      userResp.IsFollow,
+			IsFollow:      userResp.User.IsFollow,
 		},
 	}, nil
 }

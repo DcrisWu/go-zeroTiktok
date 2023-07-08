@@ -2,10 +2,13 @@ package logic
 
 import (
 	"context"
-	"go-zeroTiktok/model"
+	"github.com/pkg/errors"
+	"go-zeroTiktok/models/db"
+	"go-zeroTiktok/models/pack"
 	"go-zeroTiktok/user-service/internal/svc"
 	"go-zeroTiktok/user-service/pb/user"
 	"google.golang.org/grpc/status"
+	"gorm.io/gorm"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -28,37 +31,17 @@ func (l *GetUserByIdLogic) GetUserById(in *user.UserReq) (*user.UserResp, error)
 	if in.Uid == 0 || in.UserId == 0 {
 		return nil, status.Error(400, "参数缺失")
 	}
-	one, err := l.svcCtx.UserModel.FindOne(l.ctx, in.UserId)
-	if err != nil {
-		logx.Error(err)
+	//one, err := l.svcCtx.UserModel.FindOne(l.ctx, in.UserId)
+	modelUser, err := db.GetUserById(l.ctx, l.svcCtx.DB, in.UserId)
+	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		return nil, status.Error(500, err.Error())
 	}
-
-	if one == nil {
-		return &user.UserResp{
-			Status: 1,
-		}, nil
+	// 获取 uid 是否关注了 userId，将 db.User 封装为 user.User
+	userInfo, err := pack.User(l.ctx, l.svcCtx.DB, modelUser, in.Uid)
+	if err != nil {
+		return nil, status.Error(500, err.Error())
 	}
-
-	isFollow := false
-	if in.UserId != in.Uid {
-		rel, err := l.svcCtx.RelationModel.FindOneByUserIdToUserId(l.ctx, in.Uid, in.UserId)
-		if err != nil && err != model.ErrNotFound {
-			return nil, status.Error(500, err.Error())
-		}
-		if rel != nil {
-			isFollow = true
-		}
-	}
-
 	return &user.UserResp{
-		Status: 0,
-		User: &user.UserInfo{
-			Id:            one.Id,
-			Name:          one.UserName,
-			FollowCount:   one.FollowingCount,
-			FollowerCount: one.FollowerCount,
-		},
-		IsFollow: isFollow,
+		User: userInfo,
 	}, nil
 }

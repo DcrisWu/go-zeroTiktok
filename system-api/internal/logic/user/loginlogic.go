@@ -29,7 +29,6 @@ func NewLoginLogic(ctx context.Context, svcCtx *svc.ServiceContext) *LoginLogic 
 }
 
 func (l *LoginLogic) Login(req *types.LoginReq) (*types.LoginResp, error) {
-	// todo: add your logic here and delete this line
 	if req.UserName == "" || req.Password == "" {
 		return &types.LoginResp{
 			StatusCode: utils.FAILED,

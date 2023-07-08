@@ -1,25 +1,33 @@
 package svc
 
 import (
-	"github.com/zeromicro/go-zero/core/stores/sqlx"
 	"go-zeroTiktok/comment-service/internal/config"
-	"go-zeroTiktok/model"
+	"go-zeroTiktok/models/db"
+	"gorm.io/driver/mysql"
+	"gorm.io/gorm"
+	"gorm.io/gorm/schema"
 )
 
 type ServiceContext struct {
-	Config       config.Config
-	MysqlConn    sqlx.SqlConn
-	CommentModel model.CommentModel
-	VideoModel   model.VideoModel
+	Config config.Config
+	//MysqlConn    sqlx.SqlConn
+	//CommentModel model.CommentModel
+	//VideoModel   model.VideoModel
+	DB *gorm.DB
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
-	sqlConn := sqlx.NewMysql(c.DataSource)
-
+	database, err := gorm.Open(mysql.Open(c.DataSource), &gorm.Config{
+		NamingStrategy: schema.NamingStrategy{
+			SingularTable: true,
+		},
+	})
+	if err != nil {
+		panic(err)
+	}
+	database.AutoMigrate(&db.Video{}, db.User{}, db.Comment{}, &db.Relation{})
 	return &ServiceContext{
-		Config:       c,
-		MysqlConn:    sqlConn,
-		CommentModel: model.NewCommentModel(sqlConn),
-		VideoModel:   model.NewVideoModel(sqlConn),
+		Config: c,
+		DB:     database,
 	}
 }

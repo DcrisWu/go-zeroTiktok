@@ -3,7 +3,6 @@ package comment
 import (
 	"context"
 	"go-zeroTiktok/comment-service/pb/comment"
-	"go-zeroTiktok/user-service/pb/user"
 	"go-zeroTiktok/utils"
 	"strconv"
 
@@ -53,19 +52,26 @@ func (l *CommentListLogic) CommentList(req *types.CommentListReq) (*types.Commen
 	}
 	commentList := make([]*types.Comment, 0)
 	for _, commentInfo := range list.CommentList {
-		id, err := l.svcCtx.UserService.GetUserById(l.ctx, &user.UserReq{
-			Uid:    uid,
-			UserId: commentInfo.UserId,
-		})
-		var userInfo *types.User
-		if err != nil {
-			userInfo.Id = utils.UserNotExit
-		} else {
-			userInfo.Id = id.User.Id
-			userInfo.Name = id.User.Name
-			userInfo.FollowCount = id.User.FollowCount
-			userInfo.FollowerCount = id.User.FollowerCount
-			userInfo.IsFollow = id.IsFollow
+		//id, err := l.svcCtx.UserService.GetUserById(l.ctx, &user.UserReq{
+		//	Uid:    uid,
+		//	UserId: commentInfo.UserId,
+		//})
+		//var userInfo *types.User
+		//if err != nil {
+		//	userInfo.Id = utils.UserNotExit
+		//} else {
+		//	userInfo.Id = id.User.Id
+		//	userInfo.Name = id.User.Name
+		//	userInfo.FollowCount = id.User.FollowCount
+		//	userInfo.FollowerCount = id.User.FollowerCount
+		//	userInfo.IsFollow = id.User.IsFollow
+		//}
+		userInfo := &types.User{
+			Id:            commentInfo.User.Id,
+			Name:          commentInfo.User.Name,
+			FollowCount:   commentInfo.User.FollowCount,
+			FollowerCount: commentInfo.User.FollowerCount,
+			IsFollow:      commentInfo.User.IsFollow,
 		}
 		commentList = append(commentList, &types.Comment{
 			Id:         commentInfo.CommentId,

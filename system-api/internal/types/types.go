@@ -79,7 +79,6 @@ type PublishActionReq struct {
 type PublishActionResp struct {
 	StatusCode int64  `json:"status_code"` // 状态码 1-成功 2-失败
 	StatusMsg  string `json:"status_msg"`
-	VideoId    int64  `json:"video_id"`
 }
 
 type PublishListReq struct {

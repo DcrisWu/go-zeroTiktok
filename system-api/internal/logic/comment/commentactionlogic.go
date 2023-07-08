@@ -30,13 +30,19 @@ func NewCommentActionLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Com
 func (l *CommentActionLogic) CommentAction(req *types.CommentActionReq) (*types.CommentActionResp, error) {
 	uid := utils.GetUid(l.ctx)
 	if (req.ActionType != "1" && req.ActionType != "2") || uid == utils.PayLoadNotFound ||
-		uid == utils.UidNotFound || req.VideoId == "" || req.CommentText == "" {
+		uid == utils.UidNotFound || req.VideoId == "" {
 		return &types.CommentActionResp{
 			StatusCode: utils.FAILED,
 			StatusMsg:  "参数错误",
 		}, nil
 	}
 	if req.ActionType == "1" {
+		if req.CommentText == "" {
+			return &types.CommentActionResp{
+				StatusCode: utils.FAILED,
+				StatusMsg:  "参数错误",
+			}, nil
+		}
 		parseInt, err := strconv.ParseInt(req.VideoId, 10, 64)
 		if err != nil {
 			return &types.CommentActionResp{
@@ -61,20 +67,19 @@ func (l *CommentActionLogic) CommentAction(req *types.CommentActionReq) (*types.
 			UserId: uid,
 		})
 		userInfo := &types.User{}
-		if err != nil || userResp.Status != 0 {
+		if err != nil {
 			logx.Error("获取用户信息错误, ", err.Error())
 		} else {
 			userInfo.Id = userResp.User.Id
 			userInfo.Name = userResp.User.Name
 			userInfo.FollowCount = userResp.User.FollowCount
 			userInfo.FollowerCount = userResp.User.FollowerCount
-			userInfo.IsFollow = userResp.IsFollow
+			userInfo.IsFollow = userResp.User.IsFollow
 		}
 		return &types.CommentActionResp{
 			StatusCode: utils.SUCCESS,
 			StatusMsg:  "评论成功",
 			CommentObj: &types.Comment{
-				Id:         resp.CommentId,
 				UserInfo:   userInfo,
 				Content:    req.CommentText,
 				CreateDate: resp.CreatedAt,
@@ -82,6 +87,12 @@ func (l *CommentActionLogic) CommentAction(req *types.CommentActionReq) (*types.
 		}, nil
 	}
 	if req.ActionType == "2" {
+		if req.CommentId == "" {
+			return &types.CommentActionResp{
+				StatusCode: utils.FAILED,
+				StatusMsg:  "参数错误",
+			}, nil
+		}
 		parseInt, err := strconv.ParseInt(req.VideoId, 10, 64)
 		if err != nil {
 			return &types.CommentActionResp{
@@ -89,9 +100,16 @@ func (l *CommentActionLogic) CommentAction(req *types.CommentActionReq) (*types.
 				StatusMsg:  "评论删除失败",
 			}, nil
 		}
+		commentId, err := strconv.ParseInt(req.CommentId, 10, 64)
+		if err != nil {
+			return &types.CommentActionResp{
+				StatusCode: utils.FAILED,
+				StatusMsg:  "评论删除失败",
+			}, nil
+		}
 		commentReq := &comment.DeleteCommentReq{
-			Uid:     uid,
-			VideoId: parseInt,
+			CommentId: commentId,
+			VideoId:   parseInt,
 		}
 		resp, err := l.svcCtx.CommentService.DeleteComment(l.ctx, commentReq)
 		if err != nil || !resp.IsDeleted {

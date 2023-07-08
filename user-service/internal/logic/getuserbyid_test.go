@@ -2,15 +2,15 @@ package logic
 
 import (
 	"context"
+	"fmt"
 	"github.com/stretchr/testify/assert"
-	"github.com/zeromicro/go-zero/core/logx"
 	"go-zeroTiktok/user-service/internal/config"
 	"go-zeroTiktok/user-service/internal/svc"
 	"go-zeroTiktok/user-service/pb/user"
 	"testing"
 )
 
-func TestRegister(t *testing.T) {
+func TestGetUserById(t *testing.T) {
 	c := config.Config{
 		DataSource: "root:Wu9121522521@@tcp(localhost:3306)/tiktok?parseTime=true",
 		Argon2ID: &config.Argon2Params{
@@ -22,12 +22,11 @@ func TestRegister(t *testing.T) {
 		},
 	}
 	svcCtx := svc.NewServiceContext(c)
-	logic := NewRegisterLogic(context.Background(), svcCtx)
-	req := &user.RegisterReq{
-		UserName: "dcris",
-		Password: "test_password",
-	}
-	register, err := logic.Register(req)
+	logic := NewGetUserByIdLogic(context.Background(), svcCtx)
+	resp, err := logic.GetUserById(&user.UserReq{
+		Uid:    2,
+		UserId: 1,
+	})
 	assert.NoError(t, err)
-	logx.Info(register)
+	fmt.Printf("%+v", resp)
 }

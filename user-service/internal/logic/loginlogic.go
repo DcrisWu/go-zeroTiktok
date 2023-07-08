@@ -2,11 +2,11 @@ package logic
 
 import (
 	"context"
-	"go-zeroTiktok/model"
+	"github.com/pkg/errors"
+	"go-zeroTiktok/models/db"
 	logic "go-zeroTiktok/user-service/internal/logic/userutils"
 	"go-zeroTiktok/user-service/internal/svc"
 	"go-zeroTiktok/user-service/pb/user"
-	"go-zeroTiktok/utils"
 	"google.golang.org/grpc/status"
 
 	"github.com/zeromicro/go-zero/core/logx"
@@ -36,20 +36,20 @@ func (l *LoginLogic) Login(in *user.LoginReq) (*user.LoginResp, error) {
 		}
 	}
 	return &user.LoginResp{
-		Status: utils.SUCCESS,
 		UserId: uid,
 	}, nil
 }
 
 func (l *LoginLogic) CheckUser(in *user.LoginReq) (int64, error) {
-	u, err := l.svcCtx.UserModel.FindOneByUserName(l.ctx, in.UserName)
-	if err != nil && err != model.ErrNotFound {
+	users, err := db.QueryUser(l.ctx, l.svcCtx.DB, in.UserName)
+	if err != nil {
 		logx.Error(err)
-		return 0, err
+		return 0, errors.Errorf("数据库查询失败")
 	}
-	if err == model.ErrNotFound {
+	if len(users) == 0 {
 		return 0, status.Error(400, "用户不存在")
 	}
+	u := users[0]
 	match, err := logic.ComparePasswordAndHash(in.Password, u.Password)
 	if err != nil {
 		return 0, err
@@ -57,5 +57,5 @@ func (l *LoginLogic) CheckUser(in *user.LoginReq) (int64, error) {
 	if !match {
 		return 0, status.Error(400, "密码错误")
 	}
-	return u.Id, nil
+	return int64(u.ID), nil
 }

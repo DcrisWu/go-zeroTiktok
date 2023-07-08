@@ -11,7 +11,7 @@ message ActionReq {
 }
 
 message ActionResp {
-  int64 VideoId = 1;
+  bool IsSuccess = 1;
 }
 
 message ListReq{

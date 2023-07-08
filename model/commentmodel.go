@@ -2,8 +2,8 @@ package model
 
 import (
 	"context"
-	"fmt"
 	"github.com/doug-martin/goqu/v9"
+	"github.com/doug-martin/goqu/v9/exp"
 	"github.com/zeromicro/go-zero/core/stores/sqlx"
 	"go-zeroTiktok/model/db"
 )
@@ -16,13 +16,14 @@ type (
 	CommentModel interface {
 		commentModel
 		WithTx(session sqlx.Session) CommentModel
+		InsertComment(ctx context.Context, data *Comment) error
 		DeleteByCommentId(ctx context.Context, commentId int64) error
 		ListCommentByVideoId(ctx context.Context, videoId int64) ([]*Comment, error)
 	}
 
 	customCommentModel struct {
 		*defaultCommentModel
-		genericModel db.GenericModelConnI[Video]
+		genericModel db.GenericModelConnI[Comment]
 	}
 )
 
@@ -30,7 +31,7 @@ type (
 func NewCommentModel(conn sqlx.SqlConn) CommentModel {
 	return &customCommentModel{
 		defaultCommentModel: newCommentModel(conn),
-		genericModel:        db.NewGenericModelConn[Video](conn, "comment"),
+		genericModel:        db.NewGenericModelConn[Comment](conn, "comment"),
 	}
 }
 
@@ -41,6 +42,11 @@ func (c *customCommentModel) WithTx(session sqlx.Session) CommentModel {
 	}
 }
 
+func (c *customCommentModel) InsertComment(ctx context.Context, data *Comment) error {
+	_, err := c.genericModel.Insert(ctx, data)
+	return err
+}
+
 func (c *customCommentModel) DeleteByCommentId(ctx context.Context, commentId int64) error {
 	var where []goqu.Expression
 	where = append(where, goqu.I("video_id").Eq(commentId))
@@ -49,11 +55,10 @@ func (c *customCommentModel) DeleteByCommentId(ctx context.Context, commentId in
 }
 
 func (c *customCommentModel) ListCommentByVideoId(ctx context.Context, videoId int64) ([]*Comment, error) {
-	query := fmt.Sprintf("select %s from %s where `video_id` = ? order by 'created_at'", commentRows, c.table)
-	var resp []*Comment
-	err := c.conn.QueryRows(ctx, query, videoId, &resp)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
+	where := goqu.And(
+		goqu.I("video_id").Eq(videoId),
+	)
+	var orderBy []exp.OrderedExpression
+	orderBy = append(orderBy, goqu.I("id").Desc())
+	return c.genericModel.List(ctx, where.Expressions(), orderBy, nil, 0, 0)
 }
