@@ -1,0 +1,5 @@
+demo-gen:
+	goctl rpc --o favorite.proto
+
+favorite-gen:
+	goctl rpc protoc favorite.proto --go_out=./pb --go-grpc_out=./pb --zrpc_out=.

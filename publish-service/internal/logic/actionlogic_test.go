@@ -37,10 +37,10 @@ func TestAction(t *testing.T) {
 	svcCtx := NewServiceContext4Test()
 	logic := NewActionLogic(context.Background(), svcCtx)
 	req := &publish.ActionReq{
-		AuthorId: 6999740003925172302,
-		PlayUrl:  "http://www.bilibili.com",
-		CoverUrl: "http://www.bilibili.com",
-		Title:    "test2",
+		AuthorId: 1,
+		PlayUrl:  "http://www.baidu.com",
+		CoverUrl: "http://www.baidu.com",
+		Title:    "test1",
 	}
 	action, err := logic.Action(req)
 	assert.NoError(t, err)

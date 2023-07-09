@@ -1,0 +1,56 @@
+syntax = "proto3";
+
+package favorite;
+option go_package = "./favorite";
+
+message CreateFavoriteReq {
+  int64 UserId = 1;
+  int64 VideoId = 2;
+}
+
+message CreateFavoriteResp {
+  bool IsSuccess = 1;
+}
+
+message CancelFavoriteReq {
+  int64 UserId = 1;
+  int64 VideoId = 2;
+}
+
+message CancelFavoriteResp {
+  bool IsSuccess = 1;
+}
+
+message User{
+  int64 Id = 1;
+  string Name = 2;
+  int64 FollowCount = 3;
+  int64 FollowerCount = 4;
+  bool isFollow = 5;
+}
+
+message FavoriteList{
+  int64 UserId = 1;
+}
+
+message Video{
+  int64 Id = 1;
+  User Author = 2;
+  string PlayUrl = 3;
+  string CoverUrl = 4;
+  int64 FavoriteCount = 5;
+  int64 CommentCount = 6;
+  bool isFavorite = 7;
+  string Title = 8;
+}
+
+message FavoriteListResp{
+  repeated Video VideoList = 1;
+}
+
+
+service Favorite {
+  rpc CreateFavorite(CreateFavoriteReq) returns(CreateFavoriteResp);
+  rpc CancelFavorite(CancelFavoriteReq) returns(CancelFavoriteResp);
+  rpc GetFavoriteList(FavoriteList) returns(FavoriteListResp);
+}

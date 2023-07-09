@@ -35,9 +35,9 @@ func NewServiceContext4Test() *svc.ServiceContext {
 
 func TestCreateCommentLogic_CreateComment(t *testing.T) {
 	req := &comment.CreateCommentReq{
-		Uid:     6828874698114169068,
-		VideoId: 3321574323690790359,
-		Content: "fucking high",
+		Uid:     2,
+		VideoId: 1,
+		Content: "fucking high, too",
 	}
 	svcCtx := NewServiceContext4Test()
 	logic := NewCreateCommentLogic(context.Background(), svcCtx)
