@@ -76,7 +76,7 @@ func TestCancelFavorite(t *testing.T) {
 func TestFavoriteList(t *testing.T) {
 	svcCtx := NewServiceContext4Test()
 	logic := NewGetFavoriteListLogic(context.Background(), svcCtx)
-	req := &favorite.FavoriteList{
+	req := &favorite.FavoriteListReq{
 		UserId: 2,
 	}
 	list, err := logic.GetFavoriteList(req)
