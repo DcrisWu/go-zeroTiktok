@@ -26,7 +26,7 @@ func NewServiceContext(c config.Config) *ServiceContext {
 	if err != nil {
 		panic(err)
 	}
-	database.AutoMigrate(&db.Comment{}, db.User{}, db.Relation{})
+	database.AutoMigrate(&db.Comment{}, db.User{}, db.Relation{}, db.Video{})
 	return &ServiceContext{
 		Config: c,
 		//UserModel:     model.NewUserModel(sqlConn),

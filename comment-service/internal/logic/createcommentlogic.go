@@ -37,7 +37,7 @@ func (l *CreateCommentLogic) CreateComment(in *comment.CreateCommentReq) (*comme
 		CreatedAt: time.Now().Format("2023-07-08"),
 	}, nil
 
-	//id, err := utils.NewBasicGenerator().GenerateCommentId()
+	//id, err := mq.NewBasicGenerator().GenerateCommentId()
 	//if err != nil {
 	//	return nil, status.Error(500, "id生成失败")
 	//}

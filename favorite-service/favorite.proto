@@ -3,22 +3,13 @@ syntax = "proto3";
 package favorite;
 option go_package = "./favorite";
 
-message CreateFavoriteReq {
-  int64 UserId = 1;
-  int64 VideoId = 2;
+message FavoriteActionReq {
+  int64 ActionType = 1;
+  int64 UserId = 2;
+  int64 VideoId = 3;
 }
 
-message CreateFavoriteResp {
-  bool IsSuccess = 1;
-}
-
-message CancelFavoriteReq {
-  int64 UserId = 1;
-  int64 VideoId = 2;
-}
-
-message CancelFavoriteResp {
-  bool IsSuccess = 1;
+message FavoriteActionResp {
 }
 
 message User{
@@ -29,7 +20,7 @@ message User{
   bool isFollow = 5;
 }
 
-message FavoriteList{
+message FavoriteListReq{
   int64 UserId = 1;
 }
 
@@ -50,7 +41,6 @@ message FavoriteListResp{
 
 
 service Favorite {
-  rpc CreateFavorite(CreateFavoriteReq) returns(CreateFavoriteResp);
-  rpc CancelFavorite(CancelFavoriteReq) returns(CancelFavoriteResp);
-  rpc GetFavoriteList(FavoriteList) returns(FavoriteListResp);
+  rpc FavoriteAction(FavoriteActionReq) returns(FavoriteActionResp);
+  rpc GetFavoriteList(FavoriteListReq) returns(FavoriteListResp);
 }

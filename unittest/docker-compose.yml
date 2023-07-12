@@ -1,0 +1,64 @@
+version: '3'
+
+networks:
+  dev:
+
+
+services:
+
+  #######################  etcd  ########################
+  #  etcd:
+  #    container_name: etcd
+  #    image: bitnami/etcd:3
+  #    #image: quay.io/coreos/etcd:v3.3
+  #    restart: always
+  #    environment:
+  #      - ALLOW_NONE_AUTHENTICATION=yes
+  #      - ETCD_ADVERTISE_CLIENT_URLS=http://etcd:2379
+  #    networks:
+  #      - dev
+  #    ports:
+  #      - 22379:2379
+  #      - 22380:2380
+  #      -
+
+  #######################  mysql8.0  ########################
+  mysql8.0:
+    container_name: mysql-dev
+    image: arm64v8/mysql:8.0
+    restart: always
+    command: --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    environment:
+      - MYSQL_ROOT_PASSWORD=123456
+      - TZ=Asia/Shanghai
+    networks:
+      - dev
+    ports:
+      - "23306:3306"
+    volumes:
+      - ./mysql/:/var/lib/mysql
+
+  ########################  redis  ########################
+  redis:
+    image: redis:latest
+    container_name: redis-dev
+    restart: always
+    ports:
+      - 26379:6379
+    networks:
+      - dev
+    command: /bin/bash -c "redis-server --requirepass abcd --save '' --maxmemory 100mb"
+
+  rabbitmq:
+    image: rabbitmq:3.8.9-management
+    container_name: rabbitmq-dev
+    restart: always
+    ports:
+      - 5672:5672
+      - 15672:15672
+    environment:
+      - TZ=Asia/Shanghai
+      - RABBITMQ_DEFAULT_USER=admin
+      - RABBITMQ_DEFAULT_PASS=123456
+    volumes:
+      - ./rabbitmq/:/var/lib/rabbitmq

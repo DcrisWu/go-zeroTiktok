@@ -9,4 +9,5 @@ type Config struct {
 	zrpc.RpcServerConf
 	DataSource string
 	RedisCfg   redis.RedisConf
+	MqUrl      string
 }

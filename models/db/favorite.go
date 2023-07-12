@@ -49,3 +49,46 @@ func CreateFavorite(ctx context.Context, DB *gorm.DB, uid int64, vid int64) erro
 	})
 	return err
 }
+
+func CancelFavorite(ctx context.Context, DB *gorm.DB, uid int64, vid int64) error {
+	err := DB.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+		// 1.删除点赞数据
+		user := new(User)
+		if err := tx.WithContext(ctx).First(user, uid).Error; err != nil {
+			return err
+		}
+		video, err := GetFavoriteRelation(ctx, DB, uid, vid)
+		if err != nil {
+			return err
+		}
+
+		err = tx.Unscoped().WithContext(ctx).Model(&user).Association("FavoriteVideos").Delete(video)
+		if err != nil {
+			return err
+		}
+
+		// 2.改变 video 表中的 favorite count
+		res := tx.Model(video).Update("favorite_count", gorm.Expr("favorite_count - ?", 1))
+		if res.Error != nil {
+			return res.Error
+		}
+		if res.RowsAffected != 1 {
+			return status.Errorf(10001, "ErrDatabase")
+		}
+		return nil
+	})
+	return err
+}
+
+func FavoriteList(ctx context.Context, DB *gorm.DB, uid int64) ([]*Video, error) {
+	user := new(User)
+	if err := DB.WithContext(ctx).First(user, uid).Error; err != nil {
+		return nil, err
+	}
+
+	var videos []*Video
+	if err := DB.WithContext(ctx).Model(&user).Association("FavoriteVideos").Find(&videos); err != nil {
+		return nil, err
+	}
+	return videos, nil
+}

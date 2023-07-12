@@ -58,7 +58,7 @@ func (l *CommentListLogic) CommentList(req *types.CommentListReq) (*types.Commen
 		//})
 		//var userInfo *types.User
 		//if err != nil {
-		//	userInfo.Id = utils.UserNotExit
+		//	userInfo.Id = mq.UserNotExit
 		//} else {
 		//	userInfo.Id = id.User.Id
 		//	userInfo.Name = id.User.Name

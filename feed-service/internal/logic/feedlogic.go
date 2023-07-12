@@ -60,7 +60,7 @@ func (l *FeedLogic) getUserFeed(req *feed.FeedReq, fromId int64) (vis []*feed.Vi
 
 //func (l *FeedLogic) Feed(in *feed.FeedReq) (*feed.FeedResp, error) {
 //	uid := in.Uid
-//	lastTime := utils.TimeStringToGoTime(in.LastTime)
+//	lastTime := mq.TimeStringToGoTime(in.LastTime)
 //	if lastTime == (time.Time{}) {
 //		lastTime = time.Now()
 //	}
@@ -80,7 +80,7 @@ func (l *FeedLogic) getUserFeed(req *feed.FeedReq, fromId int64) (vis []*feed.Vi
 //		// 如果携带了token访问，就判断是否点赞了视频，是否关注了作者
 //		isFollow := false
 //		isFavorite := false
-//		if uid != utils.UidNotFound {
+//		if uid != mq.UidNotFound {
 //			_, err := l.svcCtx.RelationModel.FindOneByUserIdToUserId(l.ctx, uid, i.AuthorId)
 //			if err != nil && err != model.ErrNotFound {
 //				return nil, status.Error(500, err.Error())

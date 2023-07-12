@@ -2,6 +2,9 @@ package logic
 
 import (
 	"context"
+	"go-zeroTiktok/models/db"
+	"go-zeroTiktok/models/pack"
+	"google.golang.org/grpc/status"
 
 	"go-zeroTiktok/favorite-service/internal/svc"
 	"go-zeroTiktok/favorite-service/pb/favorite"
@@ -23,8 +26,17 @@ func NewGetFavoriteListLogic(ctx context.Context, svcCtx *svc.ServiceContext) *G
 	}
 }
 
-func (l *GetFavoriteListLogic) GetFavoriteList(in *favorite.FavoriteList) (*favorite.FavoriteListResp, error) {
-	// todo: add your logic here and delete this line
+func (l *GetFavoriteListLogic) GetFavoriteList(in *favorite.FavoriteListReq) (*favorite.FavoriteListResp, error) {
+	list, err := db.FavoriteList(l.ctx, l.svcCtx.DB, in.UserId)
+	if err != nil {
+		return nil, status.Error(500, err.Error())
+	}
 
-	return &favorite.FavoriteListResp{}, nil
+	videos, err := pack.FavoriteVideos(l.ctx, l.svcCtx.DB, list, in.UserId)
+	if err != nil {
+		return nil, err
+	}
+	return &favorite.FavoriteListResp{
+		VideoList: videos,
+	}, nil
 }

@@ -16,7 +16,7 @@ import (
 
 func NewServiceContext4Test() *svc.ServiceContext {
 	c := config.Config{
-		DataSource: "root:Wu9121522521@@tcp(localhost:3306)/tiktok?parseTime=true",
+		DataSource: "root:123456@tcp(localhost:23306)/tiktok?parseTime=true",
 	}
 	database, err := gorm.Open(mysql.Open(c.DataSource), &gorm.Config{
 		NamingStrategy: schema.NamingStrategy{

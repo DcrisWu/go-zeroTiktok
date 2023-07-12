@@ -12,7 +12,7 @@ import (
 
 func TestLogin(t *testing.T) {
 	c := config.Config{
-		DataSource: "root:Wu9121522521@@tcp(localhost:3306)/tiktok?parseTime=true",
+		DataSource: "root:123456@tcp(localhost:23306)/tiktok?parseTime=true",
 		Argon2ID: &config.Argon2Params{
 			Memory:      64 * 1024,
 			Iterations:  3,

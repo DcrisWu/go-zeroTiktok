@@ -22,17 +22,12 @@ func NewFavoriteServer(svcCtx *svc.ServiceContext) *FavoriteServer {
 	}
 }
 
-func (s *FavoriteServer) CreateFavorite(ctx context.Context, in *favorite.CreateFavoriteReq) (*favorite.CreateFavoriteResp, error) {
-	l := logic.NewCreateFavoriteLogic(ctx, s.svcCtx)
-	return l.CreateFavorite(in)
+func (s *FavoriteServer) FavoriteAction(ctx context.Context, in *favorite.FavoriteActionReq) (*favorite.FavoriteActionResp, error) {
+	l := logic.NewFavoriteActionLogic(ctx, s.svcCtx)
+	return l.FavoriteAction(in)
 }
 
-func (s *FavoriteServer) CancelFavorite(ctx context.Context, in *favorite.CancelFavoriteReq) (*favorite.CancelFavoriteResp, error) {
-	l := logic.NewCancelFavoriteLogic(ctx, s.svcCtx)
-	return l.CancelFavorite(in)
-}
-
-func (s *FavoriteServer) GetFavoriteList(ctx context.Context, in *favorite.FavoriteList) (*favorite.FavoriteListResp, error) {
+func (s *FavoriteServer) GetFavoriteList(ctx context.Context, in *favorite.FavoriteListReq) (*favorite.FavoriteListResp, error) {
 	l := logic.NewGetFavoriteListLogic(ctx, s.svcCtx)
 	return l.GetFavoriteList(in)
 }

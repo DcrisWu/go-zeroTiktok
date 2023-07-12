@@ -120,6 +120,7 @@ require (
 	github.com/prometheus/procfs v0.9.0 // indirect
 	github.com/spaolacci/murmur3 v1.1.0 // indirect
 	github.com/spf13/cast v1.4.1 // indirect
+	github.com/streadway/amqp v1.1.0 // indirect
 	github.com/ugorji/go/codec v1.2.7 // indirect
 	github.com/xdg-go/pbkdf2 v1.0.0 // indirect
 	github.com/xdg-go/scram v1.1.1 // indirect

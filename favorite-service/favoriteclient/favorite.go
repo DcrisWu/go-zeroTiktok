@@ -13,19 +13,16 @@ import (
 )
 
 type (
-	CancelFavoriteReq  = favorite.CancelFavoriteReq
-	CancelFavoriteResp = favorite.CancelFavoriteResp
-	CreateFavoriteReq  = favorite.CreateFavoriteReq
-	CreateFavoriteResp = favorite.CreateFavoriteResp
-	FavoriteList       = favorite.FavoriteList
+	FavoriteActionReq  = favorite.FavoriteActionReq
+	FavoriteActionResp = favorite.FavoriteActionResp
+	FavoriteListReq    = favorite.FavoriteListReq
 	FavoriteListResp   = favorite.FavoriteListResp
 	User               = favorite.User
 	Video              = favorite.Video
 
 	Favorite interface {
-		CreateFavorite(ctx context.Context, in *CreateFavoriteReq, opts ...grpc.CallOption) (*CreateFavoriteResp, error)
-		CancelFavorite(ctx context.Context, in *CancelFavoriteReq, opts ...grpc.CallOption) (*CancelFavoriteResp, error)
-		GetFavoriteList(ctx context.Context, in *FavoriteList, opts ...grpc.CallOption) (*FavoriteListResp, error)
+		FavoriteAction(ctx context.Context, in *FavoriteActionReq, opts ...grpc.CallOption) (*FavoriteActionResp, error)
+		GetFavoriteList(ctx context.Context, in *FavoriteListReq, opts ...grpc.CallOption) (*FavoriteListResp, error)
 	}
 
 	defaultFavorite struct {
@@ -39,17 +36,12 @@ func NewFavorite(cli zrpc.Client) Favorite {
 	}
 }
 
-func (m *defaultFavorite) CreateFavorite(ctx context.Context, in *CreateFavoriteReq, opts ...grpc.CallOption) (*CreateFavoriteResp, error) {
+func (m *defaultFavorite) FavoriteAction(ctx context.Context, in *FavoriteActionReq, opts ...grpc.CallOption) (*FavoriteActionResp, error) {
 	client := favorite.NewFavoriteClient(m.cli.Conn())
-	return client.CreateFavorite(ctx, in, opts...)
+	return client.FavoriteAction(ctx, in, opts...)
 }
 
-func (m *defaultFavorite) CancelFavorite(ctx context.Context, in *CancelFavoriteReq, opts ...grpc.CallOption) (*CancelFavoriteResp, error) {
-	client := favorite.NewFavoriteClient(m.cli.Conn())
-	return client.CancelFavorite(ctx, in, opts...)
-}
-
-func (m *defaultFavorite) GetFavoriteList(ctx context.Context, in *FavoriteList, opts ...grpc.CallOption) (*FavoriteListResp, error) {
+func (m *defaultFavorite) GetFavoriteList(ctx context.Context, in *FavoriteListReq, opts ...grpc.CallOption) (*FavoriteListResp, error) {
 	client := favorite.NewFavoriteClient(m.cli.Conn())
 	return client.GetFavoriteList(ctx, in, opts...)
 }

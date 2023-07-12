@@ -12,7 +12,7 @@ import (
 
 func TestRegister(t *testing.T) {
 	c := config.Config{
-		DataSource: "root:Wu9121522521@@tcp(localhost:3306)/tiktok?parseTime=true",
+		DataSource: "root:123456@tcp(localhost:23306)/tiktok?parseTime=true",
 		Argon2ID: &config.Argon2Params{
 			Memory:      64 * 1024,
 			Iterations:  3,
@@ -24,7 +24,7 @@ func TestRegister(t *testing.T) {
 	svcCtx := svc.NewServiceContext(c)
 	logic := NewRegisterLogic(context.Background(), svcCtx)
 	req := &user.RegisterReq{
-		UserName: "dcris",
+		UserName: "username",
 		Password: "test_password",
 	}
 	register, err := logic.Register(req)

@@ -2,6 +2,9 @@ package favorite
 
 import (
 	"context"
+	"go-zeroTiktok/favorite-service/pb/favorite"
+	"go-zeroTiktok/utils"
+	"strconv"
 
 	"go-zeroTiktok/system-api/internal/svc"
 	"go-zeroTiktok/system-api/internal/types"
@@ -23,8 +26,33 @@ func NewFavoriteActionLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Fa
 	}
 }
 
-func (l *FavoriteActionLogic) FavoriteAction(req *types.FavoriteActionReq) (resp *types.FavoriteActionResp, err error) {
-	// todo: add your logic here and delete this line
-
-	return
+func (l *FavoriteActionLogic) FavoriteAction(req *types.FavoriteActionReq) (*types.FavoriteActionResp, error) {
+	uid := utils.GetUid(l.ctx)
+	if (req.ActionType != "1" && req.ActionType != "2") || uid == utils.PayLoadNotFound || uid == utils.UidNotFound || req.VideoId == "0" {
+		return &types.FavoriteActionResp{
+			StatusCode: utils.FAILED,
+			StatusMsg:  "参数错误",
+		}, nil
+	}
+	vid, err := strconv.ParseInt(req.VideoId, 10, 64)
+	if err != nil {
+		return &types.FavoriteActionResp{
+			StatusCode: utils.FAILED,
+			StatusMsg:  "参数错误",
+		}, nil
+	}
+	_, err = l.svcCtx.FavoriteService.FavoriteAction(l.ctx, &favorite.FavoriteActionReq{
+		UserId:  uid,
+		VideoId: vid,
+	})
+	if err != nil {
+		return &types.FavoriteActionResp{
+			StatusCode: utils.FAILED,
+			StatusMsg:  "参数错误",
+		}, nil
+	}
+	return &types.FavoriteActionResp{
+		StatusCode: utils.SUCCESS,
+		StatusMsg:  "成功",
+	}, nil
 }
