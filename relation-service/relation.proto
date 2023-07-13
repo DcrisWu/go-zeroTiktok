@@ -1,0 +1,45 @@
+syntax = "proto3";
+
+package relation;
+option go_package = "./relation";
+
+message ActionReq{
+  int64 UserId = 1;
+  int64 ToUserId = 2;
+  int64 ActionType = 3; // 1:关注 2:取消关注
+}
+
+message ActionResp{
+}
+
+message FollowListReq{
+  int64 UserId = 1;
+}
+
+message User {
+  int64 Id = 1; // 用户id
+  string Name = 2; // 用户名称
+  int64 FollowCount = 3; // 关注总数
+  int64 FollowerCount = 4; // 粉丝总数
+  bool IsFollow = 5; // true-已关注，false-未关注
+}
+
+message FollowListResp{
+  repeated User UserList = 1;
+}
+
+message FollowerListReq{
+  int64 UserId = 1;
+}
+
+message FollowerListResp{
+  repeated User UserList = 1;
+}
+
+service Relation {
+  rpc Action(ActionReq) returns (ActionResp);
+  rpc FollowList(FollowListReq) returns (FollowListResp);
+  rpc FollowerList(FollowerListReq) returns (FollowerListResp);
+}
+
+
