@@ -9,3 +9,5 @@ const PayLoadNotFound int64 = -10001
 const UidNotFound int64 = -10002
 
 const UserNotExit int64 = -20001
+
+const RedisExpireTime = 60
