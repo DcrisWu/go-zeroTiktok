@@ -2,8 +2,7 @@ package logic
 
 import (
 	"context"
-	"encoding/json"
-	"go-zeroTiktok/relation-service/internal/logic/relationmq"
+	"go-zeroTiktok/models/db"
 	"google.golang.org/grpc/status"
 
 	"go-zeroTiktok/relation-service/internal/svc"
@@ -28,23 +27,18 @@ func NewActionLogic(ctx context.Context, svcCtx *svc.ServiceContext) *ActionLogi
 
 func (l *ActionLogic) Action(in *relation.ActionReq) (*relation.ActionResp, error) {
 	if in.ActionType == 1 {
-		msg, err := json.Marshal(in)
+		err := db.CreateRelation(l.ctx, l.svcCtx.DB, in.UserId, in.ToUserId)
 		if err != nil {
-			return nil, status.Error(1000, "json.Marshal error:"+err.Error())
+			return nil, err
 		}
-		relationmq.RelationActionMqSend(l.svcCtx.RelationMq, msg)
-		addRedisFollowList(l.ctx, l.svcCtx.DB, l.svcCtx.Redis, in.UserId, in.ToUserId)
-		addRedisFollowerList(l.ctx, l.svcCtx.DB, l.svcCtx.Redis, in.UserId, in.ToUserId)
+		return &relation.ActionResp{}, nil
 	}
 	if in.ActionType == 2 {
-		// 取消关注
-		msg, err := json.Marshal(in)
+		err := db.CancelRelation(l.ctx, l.svcCtx.DB, in.UserId, in.ToUserId)
 		if err != nil {
-			return nil, status.Error(1000, "json.Marshal error:"+err.Error())
+			return nil, err
 		}
-		relationmq.RelationActionMqSend(l.svcCtx.RelationMq, msg)
-		rmRedisFollowList(l.ctx, l.svcCtx.DB, l.svcCtx.Redis, in.UserId, in.ToUserId)
-		rmRedisFollowerList(l.ctx, l.svcCtx.DB, l.svcCtx.Redis, in.UserId, in.ToUserId)
+		return &relation.ActionResp{}, nil
 	}
-	return nil, status.Error(1000, "关注功能暂未开放")
+	return nil, status.Error(1000, "参数错误")
 }

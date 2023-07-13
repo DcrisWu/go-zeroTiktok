@@ -2,6 +2,9 @@ package logic
 
 import (
 	"context"
+	"go-zeroTiktok/models/db"
+	"go-zeroTiktok/models/pack"
+	"google.golang.org/grpc/status"
 
 	"go-zeroTiktok/relation-service/internal/svc"
 	"go-zeroTiktok/relation-service/pb/relation"
@@ -24,7 +27,15 @@ func NewFollowerListLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Foll
 }
 
 func (l *FollowerListLogic) FollowerList(in *relation.FollowerListReq) (*relation.FollowerListResp, error) {
-	// todo: add your logic here and delete this line
-
-	return &relation.FollowerListResp{}, nil
+	followerList, err := db.ListFollower(l.ctx, l.svcCtx.DB, in.UserId)
+	if err != nil {
+		return nil, status.Error(500, err.Error())
+	}
+	list, err := pack.FollowerList(l.ctx, l.svcCtx.DB, followerList, in.Uid)
+	if err != nil {
+		return nil, status.Error(500, err.Error())
+	}
+	return &relation.FollowerListResp{
+		UserList: list,
+	}, nil
 }
