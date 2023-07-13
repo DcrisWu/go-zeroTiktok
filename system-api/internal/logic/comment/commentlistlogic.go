@@ -52,20 +52,6 @@ func (l *CommentListLogic) CommentList(req *types.CommentListReq) (*types.Commen
 	}
 	commentList := make([]*types.Comment, 0)
 	for _, commentInfo := range list.CommentList {
-		//id, err := l.svcCtx.UserService.GetUserById(l.ctx, &user.UserReq{
-		//	Uid:    uid,
-		//	UserId: commentInfo.UserId,
-		//})
-		//var userInfo *types.User
-		//if err != nil {
-		//	userInfo.Id = mq.UserNotExit
-		//} else {
-		//	userInfo.Id = id.User.Id
-		//	userInfo.Name = id.User.Name
-		//	userInfo.FollowCount = id.User.FollowCount
-		//	userInfo.FollowerCount = id.User.FollowerCount
-		//	userInfo.IsFollow = id.User.IsFollow
-		//}
 		userInfo := &types.User{
 			Id:            commentInfo.User.Id,
 			Name:          commentInfo.User.Name,
