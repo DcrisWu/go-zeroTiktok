@@ -27,23 +27,23 @@ func GetRelation(ctx context.Context, DB *gorm.DB, uid int64, tid int64) (*Relat
 	return relation, nil
 }
 
-func GetFollowingIdByUserId(ctx context.Context, DB *gorm.DB, userId int) ([]int64, error) {
-	var following []int64
-	err := DB.WithContext(ctx).Select("to_user_id").Where("user_id = ?", userId).Find(&following).Error
-	if err != nil {
-		return nil, err
-	}
-	return following, err
-}
-
-func GetFollowerIdByUserId(ctx context.Context, DB *gorm.DB, userId int) ([]int64, error) {
-	var follower []int64
-	err := DB.WithContext(ctx).Select("user_id").Where("to_user_id = ?", userId).Find(&follower).Error
-	if err != nil {
-		return nil, err
-	}
-	return follower, err
-}
+//func GetFollowingIdByUserId(ctx context.Context, DB *gorm.DB, userId int) ([]int64, error) {
+//	var following []int64
+//	err := DB.WithContext(ctx).Select("to_user_id").Where("user_id = ?", userId).Find(&following).Error
+//	if err != nil {
+//		return nil, err
+//	}
+//	return following, err
+//}
+//
+//func GetFollowerIdByUserId(ctx context.Context, DB *gorm.DB, userId int) ([]int64, error) {
+//	var follower []int64
+//	err := DB.WithContext(ctx).Select("user_id").Where("to_user_id = ?", userId).Find(&follower).Error
+//	if err != nil {
+//		return nil, err
+//	}
+//	return follower, err
+//}
 
 func CreateRelation(ctx context.Context, DB *gorm.DB, uid int64, tid int64) error {
 	err := DB.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
@@ -112,4 +112,22 @@ func CancelRelation(ctx context.Context, DB *gorm.DB, uid int64, tid int64) erro
 		return nil
 	})
 	return err
+}
+
+func ListFollowing(ctx context.Context, DB *gorm.DB, uid int64) ([]*Relation, error) {
+	var relationList []*Relation
+	err := DB.WithContext(ctx).Where("user_id = ?", uid).Find(&relationList).Error
+	if err != nil {
+		return nil, err
+	}
+	return relationList, nil
+}
+
+func ListFollower(ctx context.Context, DB *gorm.DB, tid int64) ([]*Relation, error) {
+	var relationList []*Relation
+	err := DB.WithContext(ctx).Where("to_user_id = ?", tid).Find(&relationList).Error
+	if err != nil {
+		return nil, err
+	}
+	return relationList, nil
 }
