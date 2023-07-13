@@ -3,8 +3,9 @@ package svc
 import (
 	"github.com/zeromicro/go-zero/core/stores/redis"
 	"go-zeroTiktok/favorite-service/internal/config"
-	"go-zeroTiktok/favorite-service/internal/logic/mq"
+	"go-zeroTiktok/favorite-service/internal/logic/favoritemq"
 	"go-zeroTiktok/models/db"
+	"go-zeroTiktok/utils"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/schema"
@@ -14,7 +15,7 @@ type ServiceContext struct {
 	Config     config.Config
 	DB         *gorm.DB
 	Redis      *redis.Redis
-	FavoriteMq *mq.RabbitMq
+	FavoriteMq *utils.RabbitMq
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
@@ -32,11 +33,14 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		Config:     c,
 		DB:         database,
 		Redis:      redis.MustNewRedis(c.RedisCfg),
-		FavoriteMq: InitFavoriteMq(c.MqUrl),
+		FavoriteMq: InitFavoriteMq(c.MqUrl, database),
 	}
 }
 
-func InitFavoriteMq(mqUrl string) *mq.RabbitMq {
-	mq.InitRabbitMQ(mqUrl)
-	return mq.NewRabbitMq("favorite_queue", "favorite_exchange", "favorite")
+func InitFavoriteMq(mqUrl string, DB *gorm.DB) *utils.RabbitMq {
+	utils.InitRabbitMQ(mqUrl)
+	mq := utils.NewRabbitMq("favorite_queue", "favorite_exchange", "favorite")
+	// 启动mq消费者
+	go favoritemq.FavoriteConsumer(mq, DB)
+	return mq
 }

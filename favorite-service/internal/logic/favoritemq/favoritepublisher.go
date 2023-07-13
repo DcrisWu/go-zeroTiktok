@@ -1,11 +1,12 @@
-package mq
+package favoritemq
 
 import (
 	"github.com/streadway/amqp"
+	"go-zeroTiktok/utils"
 	"k8s.io/klog/v2"
 )
 
-func FavoriteActionSend(favoriteMq *RabbitMq, message []byte) {
+func FavoriteActionSend(favoriteMq *utils.RabbitMq, message []byte) {
 	_, err := favoriteMq.Channel.QueueDeclare(
 		favoriteMq.QueueName,
 		// 是否持久化

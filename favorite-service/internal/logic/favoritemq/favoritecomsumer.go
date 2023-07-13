@@ -1,4 +1,4 @@
-package mq
+package favoritemq
 
 import (
 	"context"
@@ -6,13 +6,14 @@ import (
 	"github.com/zeromicro/go-zero/core/logx"
 	"go-zeroTiktok/favorite-service/pb/favorite"
 	"go-zeroTiktok/models/db"
+	"go-zeroTiktok/utils"
 	"gorm.io/gorm"
 	"k8s.io/klog/v2"
 )
 
 var DB *gorm.DB
 
-func FavoriteConsumer(favoriteMq *RabbitMq, db *gorm.DB) {
+func FavoriteConsumer(favoriteMq *utils.RabbitMq, db *gorm.DB) {
 	DB = db
 	_, err := favoriteMq.Channel.QueueDeclare(favoriteMq.QueueName, true, false, false, false, nil)
 	if err != nil {
@@ -40,19 +41,19 @@ func FavoriteConsumer(favoriteMq *RabbitMq, db *gorm.DB) {
 	}
 
 	for msg := range msgChanel {
-		// 这里写你的处理逻辑
 		// 获取到的消息是amqp.Delivery对象，从中可以获取消息信息
-		go FavoriteAction(string(msg.Body))
+		var req *favorite.FavoriteActionReq
+		err := json.Unmarshal(msg.Body, &req)
+		if err != nil {
+			logx.Error("favoriteMq序列化消费信息失败")
+		} else {
+			go FavoriteAction(req)
+		}
 	}
 }
 
-func FavoriteAction(msg string) {
-	var req *favorite.FavoriteActionReq
-	err := json.Unmarshal([]byte(msg), &req)
-	if err != nil {
-		logx.Error("favoriteMq序列化消费信息失败")
-		return
-	}
+func FavoriteAction(req *favorite.FavoriteActionReq) {
+
 	if req.ActionType == 1 {
 		// 点赞
 		err := db.CreateFavorite(context.Background(), DB, req.UserId, req.VideoId)

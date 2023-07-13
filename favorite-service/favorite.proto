@@ -39,7 +39,6 @@ message FavoriteListResp{
   repeated Video VideoList = 1;
 }
 
-
 service Favorite {
   rpc FavoriteAction(FavoriteActionReq) returns(FavoriteActionResp);
   rpc GetFavoriteList(FavoriteListReq) returns(FavoriteListResp);

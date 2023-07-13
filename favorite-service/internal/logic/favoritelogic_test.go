@@ -6,7 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/zeromicro/go-zero/core/stores/redis"
 	"go-zeroTiktok/favorite-service/internal/config"
-	"go-zeroTiktok/favorite-service/internal/logic/mq"
+	"go-zeroTiktok/favorite-service/internal/logic/favoritemq"
 	"go-zeroTiktok/favorite-service/internal/svc"
 	"go-zeroTiktok/favorite-service/pb/favorite"
 	"go-zeroTiktok/models/db"
@@ -41,7 +41,7 @@ func NewServiceContext4Test() *svc.ServiceContext {
 		Config:     c,
 		DB:         database,
 		Redis:      redis.MustNewRedis(c.RedisCfg),
-		FavoriteMq: svc.InitFavoriteMq(c.MqUrl),
+		FavoriteMq: svc.InitFavoriteMq(c.MqUrl, database),
 	}
 }
 
@@ -55,7 +55,7 @@ func TestCreateFavorite(t *testing.T) {
 	}
 	_, err := logic.FavoriteAction(req)
 	assert.NoError(t, err)
-	go mq.FavoriteConsumer(svcCtx.FavoriteMq, svcCtx.DB)
+	go favoritemq.FavoriteConsumer(svcCtx.FavoriteMq, svcCtx.DB)
 	time.Sleep(time.Second * 5)
 }
 
@@ -69,7 +69,7 @@ func TestCancelFavorite(t *testing.T) {
 	}
 	_, err := logic.FavoriteAction(req)
 	assert.NoError(t, err)
-	go mq.FavoriteConsumer(svcCtx.FavoriteMq, svcCtx.DB)
+	go favoritemq.FavoriteConsumer(svcCtx.FavoriteMq, svcCtx.DB)
 	time.Sleep(time.Second * 5)
 }
 

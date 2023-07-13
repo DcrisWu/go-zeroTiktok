@@ -3,8 +3,6 @@ package main
 import (
 	"flag"
 	"fmt"
-	"go-zeroTiktok/favorite-service/internal/logic/mq"
-
 	"go-zeroTiktok/favorite-service/internal/config"
 	"go-zeroTiktok/favorite-service/internal/server"
 	"go-zeroTiktok/favorite-service/internal/svc"
@@ -25,8 +23,6 @@ func main() {
 	var c config.Config
 	conf.MustLoad(*configFile, &c)
 	ctx := svc.NewServiceContext(c)
-	// 启动mq消费者
-	go mq.FavoriteConsumer(ctx.FavoriteMq, ctx.DB)
 
 	s := zrpc.MustNewServer(c.RpcServerConf, func(grpcServer *grpc.Server) {
 		favorite.RegisterFavoriteServer(grpcServer, server.NewFavoriteServer(ctx))

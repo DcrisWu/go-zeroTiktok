@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/pkg/errors"
-	"go-zeroTiktok/favorite-service/internal/logic/mq"
+	"go-zeroTiktok/favorite-service/internal/logic/favoritemq"
 	"google.golang.org/grpc/status"
 	"strconv"
 
@@ -43,7 +43,7 @@ func (l *FavoriteActionLogic) FavoriteAction(in *favorite.FavoriteActionReq) (*f
 			logx.Error(err)
 			return nil, status.Error(500, err.Error())
 		}
-		mq.FavoriteActionSend(l.svcCtx.FavoriteMq, msg)
+		favoritemq.FavoriteActionSend(l.svcCtx.FavoriteMq, msg)
 		return &favorite.FavoriteActionResp{}, nil
 	}
 	if in.ActionType == 2 {
@@ -58,7 +58,7 @@ func (l *FavoriteActionLogic) FavoriteAction(in *favorite.FavoriteActionReq) (*f
 			logx.Error(err)
 			return nil, status.Error(500, err.Error())
 		}
-		mq.FavoriteActionSend(l.svcCtx.FavoriteMq, msg)
+		favoritemq.FavoriteActionSend(l.svcCtx.FavoriteMq, msg)
 		return &favorite.FavoriteActionResp{}, nil
 	}
 	return nil, status.Error(500, errors.New("参数不合法").Error())
