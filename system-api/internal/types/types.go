@@ -72,8 +72,8 @@ type DataInfo struct {
 }
 
 type PublishActionReq struct {
-	Data  DataInfo `form:"data"`
-	Title string   `form:"title"`
+	Data  DataInfo `json:"data"`
+	Title string   `json:"title"`
 }
 
 type PublishActionResp struct {
@@ -82,7 +82,7 @@ type PublishActionResp struct {
 }
 
 type PublishListReq struct {
-	UserId int64 `json:"user_id"`
+	UserId int64 `form:"user_id"`
 }
 
 type PublishListResp struct {
@@ -156,9 +156,9 @@ type RelationFollowListReq struct {
 }
 
 type RelationFollowListResp struct {
-	StatusCode int64  `json:"status_code"` // 状态码，0-成功，其他值-失败
-	StatusMsg  string `json:"status_msg"`  // 返回状态描述
-	UserList   []User `json:"user_list"`   // 用户关注列表
+	StatusCode int64   `json:"status_code"` // 状态码，0-成功，其他值-失败
+	StatusMsg  string  `json:"status_msg"`  // 返回状态描述
+	UserList   []*User `json:"user_list"`   // 用户关注列表
 }
 
 type RelationFollowerListReq struct {
@@ -166,7 +166,7 @@ type RelationFollowerListReq struct {
 }
 
 type RelationFollowerListResp struct {
-	StatusCode int64  `json:"status_code"` // 状态码，0-成功，其他值-失败
-	StatusMsg  string `json:"status_msg"`  // 返回状态描述
-	UserList   []User `json:"user_list"`   // 用户粉丝列表
+	StatusCode int64   `json:"status_code"` // 状态码，0-成功，其他值-失败
+	StatusMsg  string  `json:"status_msg"`  // 返回状态描述
+	UserList   []*User `json:"user_list"`   // 用户粉丝列表
 }

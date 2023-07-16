@@ -7,6 +7,7 @@ import (
 	"go-zeroTiktok/system-api/internal/types"
 	"go-zeroTiktok/utils"
 	"google.golang.org/grpc/status"
+	"net/http"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -26,10 +27,18 @@ func NewListLogic(ctx context.Context, svcCtx *svc.ServiceContext) *ListLogic {
 }
 
 func (l *ListLogic) List(req *types.PublishListReq) (*types.PublishListResp, error) {
+	uid := utils.GetUid(l.ctx)
+	isExit, err := utils.IsJwtInRedis(l.ctx, l.svcCtx.Redis, uid)
+	if err != nil || !isExit {
+		return &types.PublishListResp{
+			StatusCode: http.StatusUnauthorized,
+			StatusMsg:  "请先登录",
+		}, nil
+	}
 	var userId int64
 	// 假如没有传uid,就默认是自己
 	if req.UserId == 0 {
-		userId = utils.GetUid(l.ctx)
+		userId = uid
 	} else {
 		userId = req.UserId
 	}

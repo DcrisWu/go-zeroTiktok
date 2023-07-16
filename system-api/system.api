@@ -117,8 +117,8 @@ type (
 	}
 
 	PublishActionReq {
-		Data  DataInfo `form:"data"`
-		Title string   `form:"title"`
+		Data  DataInfo `json:"data"`
+		Title string   `json:"title"`
 	}
 
 	PublishActionResp {
@@ -127,7 +127,7 @@ type (
 	}
 
 	PublishListReq {
-		UserId int64 `json:"user_id"`
+		UserId int64 `form:"user_id"`
 	}
 
 	PublishListResp {
@@ -252,9 +252,9 @@ type (
 	}
 
 	RelationFollowListResp {
-		StatusCode int64  `json:"status_code"` // 状态码，0-成功，其他值-失败
-		StatusMsg  string `json:"status_msg"`  // 返回状态描述
-		UserList   []User `json:"user_list"`   // 用户关注列表
+		StatusCode int64   `json:"status_code"` // 状态码，0-成功，其他值-失败
+		StatusMsg  string  `json:"status_msg"`  // 返回状态描述
+		UserList   []*User `json:"user_list"`   // 用户关注列表
 	}
 
 	RelationFollowerListReq {
@@ -262,9 +262,9 @@ type (
 	}
 
 	RelationFollowerListResp {
-		StatusCode int64  `json:"status_code"` // 状态码，0-成功，其他值-失败
-		StatusMsg  string `json:"status_msg"`  // 返回状态描述
-		UserList   []User `json:"user_list"`   // 用户粉丝列表
+		StatusCode int64   `json:"status_code"` // 状态码，0-成功，其他值-失败
+		StatusMsg  string  `json:"status_msg"`  // 返回状态描述
+		UserList   []*User `json:"user_list"`   // 用户粉丝列表
 	}
 )
 

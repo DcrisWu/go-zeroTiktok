@@ -1,14 +1,14 @@
 Name: favorite.rpc
 ListenOn: 0.0.0.0:8084
-#Etcd:
-#  Hosts:
-#  - 127.0.0.1:2379
-#  Key: favorite.rpc
+Etcd:
+  Hosts:
+    - 127.0.0.1:22379
+  Key: favorite.rpc
 DataSource: root:123456@tcp(localhost:23306)/tiktok?parseTime=true
 
-Redis:
+RedisCfg:
   Host: localhost:26379
-  Type: single
+  NodeType: single
   Pass: abcd
 
 MqUrl: amqp://admin:123456@localhost:5672/

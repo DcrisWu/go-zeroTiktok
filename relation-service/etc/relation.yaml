@@ -1,6 +1,7 @@
 Name: relation.rpc
-ListenOn: 0.0.0.0:8080
+ListenOn: 0.0.0.0:8085
 Etcd:
   Hosts:
-  - 127.0.0.1:2379
+    - 127.0.0.1:22379
   Key: relation.rpc
+DataSource: root:123456@tcp(localhost:23306)/tiktok?parseTime=true

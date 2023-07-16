@@ -2,10 +2,9 @@ package utils
 
 import (
 	"context"
-	"encoding/base64"
-	"encoding/json"
 	"fmt"
 	"github.com/golang-jwt/jwt/v4"
+	"github.com/zeromicro/go-zero/core/stores/redis"
 	"strconv"
 )
 
@@ -13,6 +12,7 @@ const keyPayload = "payload"
 const keyUid = "uid"
 const keyExp = "exp"
 const keyIat = "iat"
+const JwtPrefix = "jwt:"
 
 // GenerateJwt 生成token
 // @secretKey: JWT 加解密密钥
@@ -58,22 +58,31 @@ func ParseJWT(tokenString string, secretKey string) (map[string]interface{}, err
 }
 
 func GetUid(ctx context.Context) int64 {
-	pl, _ := ctx.Value(keyPayload).(string)
-	decodeString, err := base64.StdEncoding.DecodeString(pl)
-	if err != nil {
-		return PayLoadNotFound
-	}
-	plmap := make(map[string]interface{})
-	err = json.Unmarshal(decodeString, &plmap)
-	if err != nil {
-		return PayLoadNotFound
-	}
-	if _, ok := plmap[keyUid]; !ok {
-		return UidNotFound
-	}
-	uid, err := strconv.ParseInt(plmap[keyUid].(string), 10, 64)
+	pl := ctx.Value(keyPayload).(map[string]interface{})
+	s := pl[keyUid]
+	uid, err := strconv.ParseInt(s.(string), 10, 64)
 	if err != nil {
 		return UidNotFound
 	}
 	return uid
+}
+
+func JwtToRedis(ctx context.Context, redis *redis.Redis, uid int64, exp int) error {
+	key := JwtPrefix + strconv.FormatInt(uid, 10)
+	_, err := redis.SetnxCtx(ctx, key, "1")
+	if err != nil {
+		return err
+	}
+	return redis.ExpireCtx(ctx, key, exp)
+}
+
+func IsJwtInRedis(ctx context.Context, redis *redis.Redis, uid int64) (bool, error) {
+	key := JwtPrefix + strconv.FormatInt(uid, 10)
+	return redis.ExistsCtx(ctx, key)
+}
+
+func DelJwtInRedis(ctx context.Context, redis *redis.Redis, uid int64) error {
+	key := JwtPrefix + strconv.FormatInt(uid, 10)
+	_, err := redis.DelCtx(ctx, key)
+	return err
 }

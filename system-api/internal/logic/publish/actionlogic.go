@@ -7,6 +7,7 @@ import (
 	"go-zeroTiktok/system-api/internal/svc"
 	"go-zeroTiktok/system-api/internal/types"
 	"go-zeroTiktok/utils"
+	"net/http"
 )
 
 type ActionLogic struct {
@@ -24,13 +25,20 @@ func NewActionLogic(ctx context.Context, svcCtx *svc.ServiceContext) *ActionLogi
 }
 
 func (l *ActionLogic) Action(req *types.PublishActionReq) (*types.PublishActionResp, error) {
+	uid := utils.GetUid(l.ctx)
+	isExit, err := utils.IsJwtInRedis(l.ctx, l.svcCtx.Redis, uid)
+	if err != nil || !isExit {
+		return &types.PublishActionResp{
+			StatusCode: http.StatusUnauthorized,
+			StatusMsg:  "请先登录",
+		}, nil
+	}
 	if req.Title == "" || req.Data.PlayUrl == "" || req.Data.CoverUrl == "" {
 		return &types.PublishActionResp{
 			StatusCode: utils.FAILED,
 			StatusMsg:  "参数错误",
 		}, nil
 	}
-	uid := utils.GetUid(l.ctx)
 	action, err := l.svcCtx.PublishService.Action(l.ctx, &publish.ActionReq{
 		AuthorId: uid,
 		PlayUrl:  req.Data.PlayUrl,

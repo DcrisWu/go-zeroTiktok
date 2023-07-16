@@ -24,7 +24,7 @@ func TestRegister(t *testing.T) {
 	svcCtx := svc.NewServiceContext(c)
 	logic := NewRegisterLogic(context.Background(), svcCtx)
 	req := &user.RegisterReq{
-		UserName: "username",
+		UserName: "wdd",
 		Password: "test_password",
 	}
 	register, err := logic.Register(req)

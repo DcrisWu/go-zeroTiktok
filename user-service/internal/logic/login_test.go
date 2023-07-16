@@ -24,7 +24,7 @@ func TestLogin(t *testing.T) {
 	svcCtx := svc.NewServiceContext(c)
 	logic := NewLoginLogic(context.Background(), svcCtx)
 	req := &user.LoginReq{
-		UserName: "dcris1",
+		UserName: "dcris",
 		Password: "test_password",
 	}
 	register, err := logic.Login(req)

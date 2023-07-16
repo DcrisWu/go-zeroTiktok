@@ -1,8 +1,8 @@
 Name: feed.rpc
 ListenOn: 0.0.0.0:8082
-#Etcd:
-#  Hosts:
-#  - 127.0.0.1:2379
-#  Key: feed.rpc
+Etcd:
+  Hosts:
+    - 127.0.0.1:22379
+  Key: feed.rpc
 DataSource: root:123456@tcp(localhost:23306)/tiktok?parseTime=true
 

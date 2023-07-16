@@ -4,6 +4,7 @@ import (
 	"context"
 	"go-zeroTiktok/favorite-service/pb/favorite"
 	"go-zeroTiktok/utils"
+	"net/http"
 	"strconv"
 
 	"go-zeroTiktok/system-api/internal/svc"
@@ -28,7 +29,14 @@ func NewFavoriteListLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Favo
 
 func (l *FavoriteListLogic) FavoriteList(req *types.FavoriteListReq) (*types.FavoriteListResp, error) {
 	uid := utils.GetUid(l.ctx)
-	if uid == utils.PayLoadNotFound || uid == utils.UidNotFound || req.UserId == "0" {
+	isExit, err := utils.IsJwtInRedis(l.ctx, l.svcCtx.Redis, uid)
+	if err != nil || !isExit {
+		return &types.FavoriteListResp{
+			StatusCode: http.StatusUnauthorized,
+			StatusMsg:  "请先登录",
+		}, nil
+	}
+	if uid == utils.UidNotFound || req.UserId == "0" {
 		return &types.FavoriteListResp{
 			StatusCode: utils.FAILED,
 			StatusMsg:  "参数错误",

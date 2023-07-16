@@ -47,7 +47,8 @@ func FavoriteConsumer(favoriteMq *utils.RabbitMq, db *gorm.DB) {
 		if err != nil {
 			logx.Error("favoriteMq序列化消费信息失败")
 		} else {
-			go FavoriteAction(req)
+			// 改进：手动确认，重试机制
+			FavoriteAction(req)
 		}
 	}
 }

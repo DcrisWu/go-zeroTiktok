@@ -41,7 +41,12 @@ func (l *GetVideoListLogic) GetVideoList(req *types.FeedReq) (*types.FeedResp, e
 		if err != nil {
 			goto flag
 		}
+		isExit, err := utils.IsJwtInRedis(l.ctx, l.svcCtx.Redis, parseInt)
+		if err != nil || !isExit {
+			goto flag
+		}
 		uid = parseInt
+
 	}
 
 flag:

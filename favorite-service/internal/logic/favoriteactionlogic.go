@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/pkg/errors"
 	"go-zeroTiktok/favorite-service/internal/logic/favoritemq"
+	"go-zeroTiktok/utils"
 	"google.golang.org/grpc/status"
 	"strconv"
 
@@ -28,6 +29,8 @@ func NewFavoriteActionLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Fa
 		Logger: logx.WithContext(ctx),
 	}
 }
+
+var prefix = "video-user-relation:"
 
 func (l *FavoriteActionLogic) FavoriteAction(in *favorite.FavoriteActionReq) (*favorite.FavoriteActionResp, error) {
 	if in.ActionType == 1 {
@@ -67,17 +70,23 @@ func (l *FavoriteActionLogic) FavoriteAction(in *favorite.FavoriteActionReq) (*f
 func (l *FavoriteActionLogic) SetFavoriteToRedis(uid int64, vid int64) error {
 	uidStr := strconv.Itoa(int(uid))
 	vidStr := strconv.Itoa(int(vid))
-	isMember, err := l.svcCtx.Redis.SismemberCtx(l.ctx, "video-user-relation:"+vidStr, uidStr)
+	key := prefix + vidStr
+	isMember, err := l.svcCtx.Redis.SismemberCtx(l.ctx, key, uidStr)
 	if err != nil {
 		return err
 	}
 	if isMember {
-		logx.Error(fmt.Sprintf("user: %s favourite: %s conflict", uidStr, vidStr))
+		//logx.Error(fmt.Sprintf("user: %s favourite: %s conflict", uidStr, vidStr))
 		return nil
 	}
-	_, err = l.svcCtx.Redis.SaddCtx(l.ctx, "video-user-relation:"+vidStr, uidStr)
+	_, err = l.svcCtx.Redis.SaddCtx(l.ctx, key, uidStr)
 	if err != nil {
-		logx.Error(fmt.Sprintf("user: %s set favourite to video: %s fail?", uidStr, vidStr))
+		logx.Error(fmt.Sprintf("user: %s set favourite to video: %s fail", uidStr, vidStr))
+		return err
+	}
+	err = l.svcCtx.Redis.ExpireCtx(l.ctx, key, utils.RedisExpireTime)
+	if err != nil {
+		logx.Error(fmt.Sprintf("user: %s set favourite expire to video: %s fail", uidStr, vidStr))
 		return err
 	}
 	return nil
@@ -86,17 +95,19 @@ func (l *FavoriteActionLogic) SetFavoriteToRedis(uid int64, vid int64) error {
 func (l *FavoriteActionLogic) CancelFavoriteToRedis(uid int64, vid int64) error {
 	uidStr := strconv.Itoa(int(uid))
 	vidStr := strconv.Itoa(int(vid))
-	isMember, err := l.svcCtx.Redis.SismemberCtx(l.ctx, "video-user-relation:"+vidStr, uidStr)
+	key := prefix + vidStr
+	isMember, err := l.svcCtx.Redis.SismemberCtx(l.ctx, key, uidStr)
 	if err != nil {
 		return err
 	}
 	if !isMember {
-		logx.Error(fmt.Sprintf("user: %s favourite: %s not exist", uidStr, vidStr))
-		return errors.New("user: " + uidStr + " favourite : " + vidStr + " not exist")
+		//logx.Error(fmt.Sprintf("user: %s favourite: %s not exist", uidStr, vidStr))
+		//return errors.New("user: " + uidStr + " favourite : " + vidStr + " not exist")
+		return nil
 	}
-	_, err = l.svcCtx.Redis.SremCtx(l.ctx, "video-user-relation:"+vidStr, uidStr)
+	_, err = l.svcCtx.Redis.SremCtx(l.ctx, key, uidStr)
 	if err != nil {
-		logx.Error(fmt.Sprintf("user: %s cancel favourite to video: %s fail?", uidStr, vidStr))
+		logx.Error(fmt.Sprintf("user: %s cancel favourite to video: %s fail", uidStr, vidStr))
 		return err
 	}
 	return nil

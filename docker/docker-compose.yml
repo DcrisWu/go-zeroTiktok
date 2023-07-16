@@ -7,22 +7,20 @@ networks:
 services:
 
   #######################  etcd  ########################
-  #  etcd:
-  #    container_name: etcd
-  #    image: bitnami/etcd:3
-  #    #image: quay.io/coreos/etcd:v3.3
-  #    restart: always
-  #    environment:
-  #      - ALLOW_NONE_AUTHENTICATION=yes
-  #      - ETCD_ADVERTISE_CLIENT_URLS=http://etcd:2379
-  #    networks:
-  #      - dev
-  #    ports:
-  #      - 22379:2379
-  #      - 22380:2380
-  #      -
+  etcd:
+    container_name: etcd
+    image: bitnami/etcd:3
+    #image: quay.io/coreos/etcd:v3.3
+    restart: always
+    environment:
+      - ALLOW_NONE_AUTHENTICATION=yes
+      - ETCD_ADVERTISE_CLIENT_URLS=http://etcd:2379
+    networks:
+      - dev
+    ports:
+      - 22379:2379
 
-  #######################  mysql8.0  ########################
+      #######################  mysql8.0  ########################
   mysql8.0:
     container_name: mysql-dev
     image: arm64v8/mysql:8.0

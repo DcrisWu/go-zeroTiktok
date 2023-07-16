@@ -50,6 +50,19 @@ func (l *RegisterLogic) Register(req *types.RegisterReq) (*types.RegisterResp, e
 	payload := make(map[string]interface{})
 	payload["uid"] = resp.UserId
 	token, err := utils.GenerateJwt(l.svcCtx.Config.Auth.AccessSecret, time.Now().Unix()+l.svcCtx.Config.Auth.AccessExpire, l.svcCtx.Config.Auth.AccessExpire, payload)
+	if err != nil {
+		return &types.RegisterResp{
+			StatusCode: utils.FAILED,
+			StatusMsg:  "注册失败",
+		}, nil
+	}
+	err = utils.JwtToRedis(l.ctx, l.svcCtx.Redis, resp.UserId, int(l.svcCtx.Config.Auth.AccessExpire))
+	if err != nil {
+		return &types.RegisterResp{
+			StatusCode: utils.FAILED,
+			StatusMsg:  "注册失败",
+		}, nil
+	}
 	return &types.RegisterResp{
 		StatusCode: utils.SUCCESS,
 		StatusMsg:  "注册成功",

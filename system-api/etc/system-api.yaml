@@ -2,6 +2,21 @@ Name: system-api
 Host: 0.0.0.0
 Port: 8888
 
+RedisCfg:
+  Host: localhost:26379
+  NodeType: single
+  Pass: abcd
+
+Etcd:
+  Hosts:
+    - 127.0.0.1:22379
+  UserKey: user.rpc
+  PublishKey: publish.rpc
+  FeedKey: feed.rpc
+  CommentKey: comment.rpc
+  FavoriteKey: favorite.rpc
+  RelationKey: relation.rpc
+
 Auth:
   AccessSecret: usrtdcrisfuckingu
   AccessExpire: 3600

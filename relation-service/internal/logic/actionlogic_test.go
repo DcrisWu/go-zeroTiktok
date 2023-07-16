@@ -1,12 +1,16 @@
 package logic
 
 import (
+	"context"
+	"github.com/stretchr/testify/assert"
 	"go-zeroTiktok/models/db"
 	"go-zeroTiktok/relation-service/internal/config"
 	"go-zeroTiktok/relation-service/internal/svc"
+	"go-zeroTiktok/relation-service/pb/relation"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/schema"
+	"testing"
 )
 
 func NewServiceContext4Test() *svc.ServiceContext {
@@ -27,4 +31,26 @@ func NewServiceContext4Test() *svc.ServiceContext {
 		Config: c,
 		DB:     database,
 	}
+}
+
+func TestCreateActionLogic(t *testing.T) {
+	svcCtx := NewServiceContext4Test()
+	logic := NewActionLogic(context.Background(), svcCtx)
+	_, err := logic.Action(&relation.ActionReq{
+		UserId:     3,
+		ToUserId:   2,
+		ActionType: 1,
+	})
+	assert.NoError(t, err)
+}
+
+func TestCancelActionLogic(t *testing.T) {
+	svcCtx := NewServiceContext4Test()
+	logic := NewActionLogic(context.Background(), svcCtx)
+	_, err := logic.Action(&relation.ActionReq{
+		UserId:     2,
+		ToUserId:   1,
+		ActionType: 2,
+	})
+	assert.NoError(t, err)
 }

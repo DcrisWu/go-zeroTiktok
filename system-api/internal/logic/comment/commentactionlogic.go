@@ -5,6 +5,7 @@ import (
 	"go-zeroTiktok/comment-service/pb/comment"
 	"go-zeroTiktok/user-service/pb/user"
 	"go-zeroTiktok/utils"
+	"net/http"
 	"strconv"
 
 	"go-zeroTiktok/system-api/internal/svc"
@@ -29,8 +30,14 @@ func NewCommentActionLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Com
 
 func (l *CommentActionLogic) CommentAction(req *types.CommentActionReq) (*types.CommentActionResp, error) {
 	uid := utils.GetUid(l.ctx)
-	if (req.ActionType != "1" && req.ActionType != "2") || uid == utils.PayLoadNotFound ||
-		uid == utils.UidNotFound || req.VideoId == "" {
+	isExit, err := utils.IsJwtInRedis(l.ctx, l.svcCtx.Redis, uid)
+	if err != nil || !isExit {
+		return &types.CommentActionResp{
+			StatusCode: http.StatusUnauthorized,
+			StatusMsg:  "请先登录",
+		}, nil
+	}
+	if (req.ActionType != "1" && req.ActionType != "2") || uid == utils.UidNotFound || req.VideoId == "" {
 		return &types.CommentActionResp{
 			StatusCode: utils.FAILED,
 			StatusMsg:  "参数错误",

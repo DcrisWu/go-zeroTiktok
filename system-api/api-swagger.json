@@ -1,0 +1,1051 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "系统 API",
+    "description": "系统 API",
+    "version": ""
+  },
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/tiktok/comment/action": {
+      "post": {
+        "summary": "评论操作",
+        "operationId": "CommentAction",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/CommentActionResp"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/CommentActionReq"
+            }
+          }
+        ],
+        "requestBody": {},
+        "tags": [
+          "comment"
+        ]
+      }
+    },
+    "/tiktok/comment/list/{vedio_id}": {
+      "get": {
+        "summary": "获取评论列表",
+        "operationId": "CommentList",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/CommentListResp"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "vedio_id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "vedioId",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "requestBody": {},
+        "tags": [
+          "comment"
+        ]
+      }
+    },
+    "/tiktok/favorite/action": {
+      "post": {
+        "summary": "点赞操作",
+        "operationId": "FavoriteAction",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/FavoriteActionResp"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/FavoriteActionReq"
+            }
+          }
+        ],
+        "requestBody": {},
+        "tags": [
+          "favorite"
+        ]
+      }
+    },
+    "/tiktok/favorite/list/{user_id}": {
+      "get": {
+        "summary": "获取点赞列表",
+        "operationId": "FavoriteList",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/FavoriteListResp"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "requestBody": {},
+        "tags": [
+          "favorite"
+        ]
+      }
+    },
+    "/tiktok/feed": {
+      "get": {
+        "summary": "不限制登录状态，返回按投稿时间倒序的视频列表，视频数由服务端控制，单次最多30个",
+        "operationId": "GetVideoList",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/FeedResp"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "Authorization",
+            "description": " token",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "latest_time",
+            "description": " 最新视频的时间，格式 yyyy-mm-dd hh:mm:ss",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "requestBody": {},
+        "tags": [
+          "feed"
+        ]
+      }
+    },
+    "/tiktok/publish/action": {
+      "post": {
+        "summary": "发布视频操作 ",
+        "operationId": "Action",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/PublishActionResp"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/PublishActionReq"
+            }
+          }
+        ],
+        "requestBody": {},
+        "tags": [
+          "publish"
+        ]
+      }
+    },
+    "/tiktok/publish/list": {
+      "get": {
+        "summary": "获取用户发布的视频列表",
+        "operationId": "List",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/PublishListResp"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "query",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          }
+        ],
+        "requestBody": {},
+        "tags": [
+          "publish"
+        ]
+      }
+    },
+    "/tiktok/relation/action": {
+      "post": {
+        "summary": "关注操作",
+        "operationId": "RelationAction",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/RelationActionResp"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/RelationActionReq"
+            }
+          }
+        ],
+        "requestBody": {},
+        "tags": [
+          "relation"
+        ]
+      }
+    },
+    "/tiktok/relation/follow/list/{user_id}": {
+      "get": {
+        "summary": "获取关注列表",
+        "operationId": "RelationFollowList",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/RelationFollowListResp"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "requestBody": {},
+        "tags": [
+          "relation"
+        ]
+      }
+    },
+    "/tiktok/relation/follower/list/{user_id}": {
+      "get": {
+        "summary": "获取粉丝列表",
+        "operationId": "RelationFollowerList",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/RelationFollowerListResp"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "requestBody": {},
+        "tags": [
+          "relation"
+        ]
+      }
+    },
+    "/tiktok/user": {
+      "get": {
+        "summary": "获取用户信息",
+        "operationId": "GetUserMsg",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/UserResp"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "query",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          }
+        ],
+        "requestBody": {},
+        "tags": [
+          "user"
+        ]
+      }
+    },
+    "/tiktok/user/login": {
+      "post": {
+        "summary": "用户登录",
+        "operationId": "Login",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/LoginResp"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/LoginReq"
+            }
+          }
+        ],
+        "requestBody": {},
+        "tags": [
+          "user"
+        ]
+      }
+    },
+    "/tiktok/user/register": {
+      "post": {
+        "summary": "用户注册",
+        "operationId": "Register",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/RegisterResp"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/RegisterReq"
+            }
+          }
+        ],
+        "requestBody": {},
+        "tags": [
+          "user"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "Comment": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "user": {
+          "$ref": "#/definitions/User",
+          "description": " 评论用户信息"
+        },
+        "content": {
+          "type": "string",
+          "description": " 评论内容"
+        },
+        "create_date": {
+          "type": "string",
+          "description": " 评论发布日期，格式 mm-dd"
+        }
+      },
+      "title": "Comment",
+      "required": [
+        "id",
+        "user",
+        "content",
+        "create_date"
+      ]
+    },
+    "CommentActionReq": {
+      "type": "object",
+      "properties": {
+        "vedio_id": {
+          "type": "string",
+          "description": " 视频id"
+        },
+        "action_type": {
+          "type": "string",
+          "description": " 1-发布评论，2-删除评论"
+        },
+        "comment_text": {
+          "type": "string",
+          "description": " 可选，用户填写的评论内容，在action_type=1的时候使用"
+        },
+        "comment_id": {
+          "type": "string",
+          "description": " 可选，要删除的评论id，在action_type=2的时候使用"
+        }
+      },
+      "title": "CommentActionReq",
+      "required": [
+        "vedio_id",
+        "action_type"
+      ]
+    },
+    "CommentActionResp": {
+      "type": "object",
+      "properties": {
+        "status_code": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "status_msg": {
+          "type": "string"
+        },
+        "comment": {
+          "$ref": "#/definitions/Comment",
+          "description": " 多选一且必须只能符合下列其中一组子节点（即XOR，"
+        }
+      },
+      "title": "CommentActionResp",
+      "required": [
+        "status_code",
+        "status_msg"
+      ]
+    },
+    "CommentListReq": {
+      "type": "object",
+      "properties": {
+        "vedioId": {
+          "type": "string"
+        }
+      },
+      "title": "CommentListReq",
+      "required": [
+        "vedioId"
+      ]
+    },
+    "CommentListResp": {
+      "type": "object",
+      "properties": {
+        "status_code": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "status_msg": {
+          "type": "string"
+        },
+        "array": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Comment"
+          }
+        }
+      },
+      "title": "CommentListResp",
+      "required": [
+        "status_code",
+        "status_msg",
+        "array"
+      ]
+    },
+    "DataInfo": {
+      "type": "object",
+      "properties": {
+        "play_url": {
+          "type": "string"
+        },
+        "cover_url": {
+          "type": "string"
+        }
+      },
+      "title": "DataInfo",
+      "required": [
+        "play_url",
+        "cover_url"
+      ]
+    },
+    "FavoriteActionReq": {
+      "type": "object",
+      "properties": {
+        "video_id": {
+          "type": "string"
+        },
+        "action_type": {
+          "type": "string",
+          "description": " 1-点赞，2-取消点赞"
+        }
+      },
+      "title": "FavoriteActionReq",
+      "required": [
+        "video_id",
+        "action_type"
+      ]
+    },
+    "FavoriteActionResp": {
+      "type": "object",
+      "properties": {
+        "status_code": {
+          "type": "integer",
+          "format": "int64",
+          "description": " 状态码，0-成功，其他值-失败"
+        },
+        "status_msg": {
+          "type": "string"
+        }
+      },
+      "title": "FavoriteActionResp",
+      "required": [
+        "status_code",
+        "status_msg"
+      ]
+    },
+    "FavoriteListReq": {
+      "type": "object",
+      "properties": {
+        "user_id": {
+          "type": "string"
+        }
+      },
+      "title": "FavoriteListReq",
+      "required": [
+        "user_id"
+      ]
+    },
+    "FavoriteListResp": {
+      "type": "object",
+      "properties": {
+        "status_code": {
+          "type": "integer",
+          "format": "int64",
+          "description": " 状态码，0-成功，其他值-失败"
+        },
+        "status_msg": {
+          "type": "string",
+          "description": " 返回状态描述"
+        },
+        "video_list": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Video"
+          },
+          "description": " 户点赞视频列表"
+        }
+      },
+      "title": "FavoriteListResp",
+      "required": [
+        "status_code",
+        "status_msg",
+        "video_list"
+      ]
+    },
+    "FeedReq": {
+      "type": "object",
+      "properties": {
+        "Authorization": {
+          "type": "string",
+          "description": " token"
+        },
+        "latest_time": {
+          "type": "string",
+          "description": " 最新视频的时间，格式 yyyy-mm-dd hh:mm:ss"
+        }
+      },
+      "title": "FeedReq"
+    },
+    "FeedResp": {
+      "type": "object",
+      "properties": {
+        "stats_code": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "status_msg": {
+          "type": "string"
+        },
+        "next_time": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "video_list": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Video"
+          }
+        }
+      },
+      "title": "FeedResp",
+      "required": [
+        "stats_code",
+        "status_msg",
+        "next_time",
+        "video_list"
+      ]
+    },
+    "LoginReq": {
+      "type": "object",
+      "properties": {
+        "username": {
+          "type": "string",
+          "description": " 用户名"
+        },
+        "password": {
+          "type": "string",
+          "description": " 密码"
+        }
+      },
+      "title": "LoginReq",
+      "required": [
+        "username",
+        "password"
+      ]
+    },
+    "LoginResp": {
+      "type": "object",
+      "properties": {
+        "status_code": {
+          "type": "integer",
+          "format": "int64",
+          "description": " 状态码 0-成功 1-失败"
+        },
+        "status_msg": {
+          "type": "string",
+          "description": " 状态信息"
+        },
+        "user_id": {
+          "type": "integer",
+          "format": "int64",
+          "description": " 用户id"
+        },
+        "token": {
+          "type": "string",
+          "description": " token"
+        }
+      },
+      "title": "LoginResp",
+      "required": [
+        "status_code",
+        "status_msg",
+        "user_id",
+        "token"
+      ]
+    },
+    "PublishActionReq": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "$ref": "#/definitions/DataInfo"
+        },
+        "title": {
+          "type": "string"
+        }
+      },
+      "title": "PublishActionReq",
+      "required": [
+        "data",
+        "title"
+      ]
+    },
+    "PublishActionResp": {
+      "type": "object",
+      "properties": {
+        "status_code": {
+          "type": "integer",
+          "format": "int64",
+          "description": " 状态码 1-成功 2-失败"
+        },
+        "status_msg": {
+          "type": "string"
+        }
+      },
+      "title": "PublishActionResp",
+      "required": [
+        "status_code",
+        "status_msg"
+      ]
+    },
+    "PublishListReq": {
+      "type": "object",
+      "properties": {
+        "user_id": {
+          "type": "integer",
+          "format": "int64"
+        }
+      },
+      "title": "PublishListReq",
+      "required": [
+        "user_id"
+      ]
+    },
+    "PublishListResp": {
+      "type": "object",
+      "properties": {
+        "status_code": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "status_msg": {
+          "type": "string"
+        },
+        "video_list": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Video"
+          }
+        }
+      },
+      "title": "PublishListResp",
+      "required": [
+        "status_code",
+        "status_msg",
+        "video_list"
+      ]
+    },
+    "RegisterReq": {
+      "type": "object",
+      "properties": {
+        "username": {
+          "type": "string",
+          "description": " 用户名"
+        },
+        "password": {
+          "type": "string",
+          "description": " 密码"
+        }
+      },
+      "title": "RegisterReq",
+      "required": [
+        "username",
+        "password"
+      ]
+    },
+    "RegisterResp": {
+      "type": "object",
+      "properties": {
+        "status_code": {
+          "type": "integer",
+          "format": "int64",
+          "description": " 状态码 0-成功 1-失败"
+        },
+        "status_msg": {
+          "type": "string",
+          "description": " 状态信息"
+        },
+        "user_id": {
+          "type": "integer",
+          "format": "int64",
+          "description": " 用户id"
+        },
+        "token": {
+          "type": "string",
+          "description": " token"
+        }
+      },
+      "title": "RegisterResp",
+      "required": [
+        "status_code",
+        "status_msg",
+        "user_id",
+        "token"
+      ]
+    },
+    "RelationActionReq": {
+      "type": "object",
+      "properties": {
+        "to_user_id": {
+          "type": "string",
+          "description": " 被关注用户id"
+        },
+        "action_type": {
+          "type": "string",
+          "description": " 1-关注，2-取消关注"
+        }
+      },
+      "title": "RelationActionReq",
+      "required": [
+        "to_user_id",
+        "action_type"
+      ]
+    },
+    "RelationActionResp": {
+      "type": "object",
+      "properties": {
+        "status_code": {
+          "type": "integer",
+          "format": "int64",
+          "description": " 状态码，0-成功，其他值-失败"
+        },
+        "status_msg": {
+          "type": "string",
+          "description": " 返回状态描述"
+        }
+      },
+      "title": "RelationActionResp",
+      "required": [
+        "status_code",
+        "status_msg"
+      ]
+    },
+    "RelationFollowListReq": {
+      "type": "object",
+      "properties": {
+        "user_id": {
+          "type": "string"
+        }
+      },
+      "title": "RelationFollowListReq",
+      "required": [
+        "user_id"
+      ]
+    },
+    "RelationFollowListResp": {
+      "type": "object",
+      "properties": {
+        "status_code": {
+          "type": "integer",
+          "format": "int64",
+          "description": " 状态码，0-成功，其他值-失败"
+        },
+        "status_msg": {
+          "type": "string",
+          "description": " 返回状态描述"
+        },
+        "user_list": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/User"
+          },
+          "description": " 用户关注列表"
+        }
+      },
+      "title": "RelationFollowListResp",
+      "required": [
+        "status_code",
+        "status_msg",
+        "user_list"
+      ]
+    },
+    "RelationFollowerListReq": {
+      "type": "object",
+      "properties": {
+        "user_id": {
+          "type": "string"
+        }
+      },
+      "title": "RelationFollowerListReq",
+      "required": [
+        "user_id"
+      ]
+    },
+    "RelationFollowerListResp": {
+      "type": "object",
+      "properties": {
+        "status_code": {
+          "type": "integer",
+          "format": "int64",
+          "description": " 状态码，0-成功，其他值-失败"
+        },
+        "status_msg": {
+          "type": "string",
+          "description": " 返回状态描述"
+        },
+        "user_list": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/User"
+          },
+          "description": " 用户粉丝列表"
+        }
+      },
+      "title": "RelationFollowerListResp",
+      "required": [
+        "status_code",
+        "status_msg",
+        "user_list"
+      ]
+    },
+    "User": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int64",
+          "description": " 用户id"
+        },
+        "name": {
+          "type": "string",
+          "description": " 用户名"
+        },
+        "follow_count": {
+          "type": "integer",
+          "format": "int64",
+          "description": " 关注数"
+        },
+        "follower_count": {
+          "type": "integer",
+          "format": "int64",
+          "description": " 粉丝数"
+        },
+        "is_follow": {
+          "type": "boolean",
+          "format": "boolean",
+          "description": " 是否关注"
+        }
+      },
+      "title": "User",
+      "required": [
+        "id",
+        "name",
+        "follow_count",
+        "follower_count",
+        "is_follow"
+      ]
+    },
+    "UserReq": {
+      "type": "object",
+      "properties": {
+        "user_id": {
+          "type": "integer",
+          "format": "int64"
+        }
+      },
+      "title": "UserReq",
+      "required": [
+        "user_id"
+      ]
+    },
+    "UserResp": {
+      "type": "object",
+      "properties": {
+        "status_code": {
+          "type": "integer",
+          "format": "int64",
+          "description": " 状态码 0-成功 1-失败"
+        },
+        "status_msg": {
+          "type": "string",
+          "description": " 状态信息"
+        },
+        "user": {
+          "$ref": "#/definitions/User",
+          "description": " 用户信息"
+        }
+      },
+      "title": "UserResp",
+      "required": [
+        "status_code",
+        "status_msg",
+        "user"
+      ]
+    },
+    "Video": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "author": {
+          "$ref": "#/definitions/User"
+        },
+        "play_url": {
+          "type": "string",
+          "description": " 播放地址"
+        },
+        "cover_url": {
+          "type": "string",
+          "description": " 封面地址"
+        },
+        "favorite_count": {
+          "type": "integer",
+          "format": "int64",
+          "description": " 收藏数"
+        },
+        "comment_count": {
+          "type": "integer",
+          "format": "int64",
+          "description": " 评论数"
+        },
+        "is_favorite": {
+          "type": "boolean",
+          "format": "boolean",
+          "description": " 是否收藏"
+        },
+        "title": {
+          "type": "string",
+          "description": " 视频标题"
+        }
+      },
+      "title": "Video",
+      "required": [
+        "id",
+        "author",
+        "play_url",
+        "cover_url",
+        "favorite_count",
+        "comment_count",
+        "is_favorite",
+        "title"
+      ]
+    }
+  },
+  "securityDefinitions": {
+    "apiKey": {
+      "type": "apiKey",
+      "description": "Enter JWT Bearer token **_only_**",
+      "name": "Authorization",
+      "in": "header"
+    }
+  },
+  "security": [
+    {
+      "apiKey": []
+    }
+  ]
+}
