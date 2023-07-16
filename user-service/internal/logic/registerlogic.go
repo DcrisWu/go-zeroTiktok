@@ -2,8 +2,10 @@ package logic
 
 import (
 	"context"
+	"fmt"
 	"github.com/pkg/errors"
 	"github.com/zeromicro/go-zero/core/logx"
+	"github.com/zeromicro/go-zero/core/stores/redis"
 	"go-zeroTiktok/models/db"
 	"go-zeroTiktok/user-service/internal/config"
 	"go-zeroTiktok/user-service/internal/logic/userutils"
@@ -28,8 +30,13 @@ func NewRegisterLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Register
 }
 
 func (l *RegisterLogic) Register(in *user.RegisterReq) (*user.RegisterResp, error) {
-
-	err := l.CreateUser(in, l.svcCtx.Config.Argon2ID)
+	redisLock := getCreateOpLock(l.svcCtx.Redis, in.UserName)
+	acquireCtx, err := redisLock.AcquireCtx(l.ctx)
+	if err != nil || !acquireCtx {
+		return nil, errors.Errorf("获取锁失败")
+	}
+	defer redisLock.Release()
+	err = l.CreateUser(in, l.svcCtx.Config.Argon2ID)
 	if err != nil {
 		if _, ok := status.FromError(err); ok {
 			return nil, err
@@ -53,7 +60,7 @@ func (l *RegisterLogic) Register(in *user.RegisterReq) (*user.RegisterResp, erro
 }
 
 func (l *RegisterLogic) CreateUser(in *user.RegisterReq, argon2Params *config.Argon2Params) error {
-	//u, err := l.svcCtx.UserModel.FindOneByUserName(l.ctx, in.UserName)
+
 	users, err := db.QueryUser(l.ctx, l.svcCtx.DB, in.UserName)
 	if err != nil {
 		return err
@@ -90,4 +97,11 @@ func (l *RegisterLogic) CheckUser(in *user.RegisterReq) (int64, error) {
 		return 0, status.Error(400, "密码错误")
 	}
 	return int64(u.ID), nil
+}
+
+func getCreateOpLock(r *redis.Redis, userName string) *redis.RedisLock {
+	key := fmt.Sprintf("user-create:%s", userName)
+	redisLock := redis.NewRedisLock(r, key)
+	redisLock.SetExpire(5)
+	return redisLock
 }

@@ -1,6 +1,7 @@
 package svc
 
 import (
+	"github.com/zeromicro/go-zero/core/stores/redis"
 	"go-zeroTiktok/models/db"
 	"go-zeroTiktok/user-service/internal/config"
 	"gorm.io/driver/mysql"
@@ -10,9 +11,8 @@ import (
 
 type ServiceContext struct {
 	Config config.Config
-	//UserModel     model.UserModel
-	//RelationModel model.RelationModel
-	DB *gorm.DB
+	DB     *gorm.DB
+	Redis  *redis.Redis
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
@@ -29,8 +29,7 @@ func NewServiceContext(c config.Config) *ServiceContext {
 	database.AutoMigrate(&db.Comment{}, db.User{}, db.Relation{}, db.Video{})
 	return &ServiceContext{
 		Config: c,
-		//UserModel:     model.NewUserModel(sqlConn),
-		//RelationModel: model.NewRelationModel(sqlConn),
-		DB: database,
+		DB:     database,
+		Redis:  redis.MustNewRedis(c.RedisCfg),
 	}
 }

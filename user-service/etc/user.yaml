@@ -7,6 +7,11 @@ Etcd:
 
 DataSource: root:123456@tcp(localhost:23306)/tiktok?parseTime=true
 
+RedisCfg:
+  Host: localhost:26379
+  NodeType: single
+  Pass: abcd
+
 Argon2ID:
   Memory: 65536
   Iterations: 3
