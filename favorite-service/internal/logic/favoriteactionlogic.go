@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"github.com/pkg/errors"
 	"go-zeroTiktok/favorite-service/internal/logic/favoritemq"
-	"go-zeroTiktok/utils"
 	"google.golang.org/grpc/status"
 	"strconv"
 
@@ -84,11 +83,7 @@ func (l *FavoriteActionLogic) SetFavoriteToRedis(uid int64, vid int64) error {
 		logx.Error(fmt.Sprintf("user: %s set favourite to video: %s fail", uidStr, vidStr))
 		return err
 	}
-	err = l.svcCtx.Redis.ExpireCtx(l.ctx, key, utils.RedisExpireTime)
-	if err != nil {
-		logx.Error(fmt.Sprintf("user: %s set favourite expire to video: %s fail", uidStr, vidStr))
-		return err
-	}
+	// 对于点赞的redis不设置过期时间，可以使用定时任务，定期更新redis的数据
 	return nil
 }
 
