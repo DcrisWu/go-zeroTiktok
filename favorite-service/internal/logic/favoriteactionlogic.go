@@ -30,11 +30,15 @@ func NewFavoriteActionLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Fa
 }
 
 var prefix = "video-user-relation:"
+var RepeatedActionErr = errors.Errorf("user: %s favourite: %s already exist")
 
 func (l *FavoriteActionLogic) FavoriteAction(in *favorite.FavoriteActionReq) (*favorite.FavoriteActionResp, error) {
 	if in.ActionType == 1 {
 		err := l.SetFavoriteToRedis(in.UserId, in.VideoId)
 		if err != nil {
+			if errors.Is(err, RepeatedActionErr) {
+				return &favorite.FavoriteActionResp{}, nil
+			}
 			logx.Error(err)
 			return nil, status.Error(500, err.Error())
 		}
@@ -51,6 +55,9 @@ func (l *FavoriteActionLogic) FavoriteAction(in *favorite.FavoriteActionReq) (*f
 	if in.ActionType == 2 {
 		err := l.CancelFavoriteToRedis(in.UserId, in.VideoId)
 		if err != nil {
+			if errors.Is(err, RepeatedActionErr) {
+				return &favorite.FavoriteActionResp{}, nil
+			}
 			logx.Error(err)
 			return nil, status.Error(500, err.Error())
 		}
@@ -75,8 +82,7 @@ func (l *FavoriteActionLogic) SetFavoriteToRedis(uid int64, vid int64) error {
 		return err
 	}
 	if isMember {
-		//logx.Error(fmt.Sprintf("user: %s favourite: %s conflict", uidStr, vidStr))
-		return nil
+		return RepeatedActionErr
 	}
 	_, err = l.svcCtx.Redis.SaddCtx(l.ctx, key, uidStr)
 	if err != nil {
@@ -96,9 +102,7 @@ func (l *FavoriteActionLogic) CancelFavoriteToRedis(uid int64, vid int64) error 
 		return err
 	}
 	if !isMember {
-		//logx.Error(fmt.Sprintf("user: %s favourite: %s not exist", uidStr, vidStr))
-		//return errors.New("user: " + uidStr + " favourite : " + vidStr + " not exist")
-		return nil
+		return RepeatedActionErr
 	}
 	_, err = l.svcCtx.Redis.SremCtx(l.ctx, key, uidStr)
 	if err != nil {
