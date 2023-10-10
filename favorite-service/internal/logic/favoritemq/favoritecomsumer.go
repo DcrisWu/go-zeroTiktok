@@ -3,6 +3,7 @@ package favoritemq
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"github.com/zeromicro/go-zero/core/logx"
 	"go-zeroTiktok/favorite-service/pb/favorite"
 	"go-zeroTiktok/models/db"
@@ -47,28 +48,43 @@ func FavoriteConsumer(favoriteMq *utils.RabbitMq, db *gorm.DB) {
 		if err != nil {
 			logx.Error("favoriteMq序列化消费信息失败")
 		} else {
-			// 改进：手动确认，重试机制
-			FavoriteAction(req)
+			// 重试3次
+			err := Retry(func() error {
+				return FavoriteAction(req)
+			}, 3)
+			if err != nil {
+				logx.Error("favoriteMq消费失败")
+			}
 		}
 	}
 }
 
-func FavoriteAction(req *favorite.FavoriteActionReq) {
+func Retry(f func() error, times int) (err error) {
+	// 重试机制
+	for i := 0; i < times; i++ {
+		err = f()
+		if err == nil {
+			break
+		}
+	}
+	return
+}
+
+func FavoriteAction(req *favorite.FavoriteActionReq) error {
 
 	if req.ActionType == 1 {
 		// 点赞
 		err := db.CreateFavorite(context.Background(), DB, req.UserId, req.VideoId)
 		if err != nil {
-			logx.Errorf("favoriteMq添加点赞关系失败")
-			return
+			return errors.New("favoriteMq添加点赞关系失败")
 		}
 	}
 	if req.ActionType == 2 {
 		// 取消点赞
 		err := db.CancelFavorite(context.Background(), DB, req.UserId, req.VideoId)
 		if err != nil {
-			logx.Errorf("favoriteMq取消点赞关系失败")
-			return
+			return errors.New("favoriteMq添加点赞关系失败")
 		}
 	}
+	return nil
 }
